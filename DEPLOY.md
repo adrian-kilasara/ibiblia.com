@@ -155,6 +155,24 @@ Render and both Vercel projects redeploy automatically. Database schema changes 
 
 ---
 
+## Alternative to Vercel — host the site + admin on Render
+
+If Vercel gives you trouble, you can host the two Next.js apps on **Render** too (same place as the API). For **each** app create a **Web Service**:
+
+**Public site:**
+- **Root Directory:** *(leave blank)*
+- **Build Command:** `corepack enable && pnpm install --frozen-lockfile && pnpm --filter @ibiblia/web build`
+- **Start Command:** `pnpm --filter @ibiblia/web start`
+- **Environment:** `NEXT_PUBLIC_API_URL` = your API URL, `NODE_VERSION` = `20`
+- Plan: Free
+
+**Admin:** identical, but swap `@ibiblia/web` → `@ibiblia/admin` in both commands.
+
+(The `next start` scripts read the host's `PORT` automatically.) You'll get URLs like `ibiblia-web.onrender.com` and `ibiblia-admin.onrender.com`.
+
+### Or Netlify
+Netlify also works: **Add new site → Import** the repo → set **Base directory** to `apps/web` (and a second site with `apps/admin`), add `NEXT_PUBLIC_API_URL`, deploy. Netlify auto-installs its Next.js plugin.
+
 ## Free alternatives (if Render's sleep bothers you)
 
 - **Koyeb** (free instance that stays awake): create a Web Service from the repo, same build/start commands as Step 2.
