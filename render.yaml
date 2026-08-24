@@ -1,0 +1,21 @@
+# Render.com Blueprint for the iBiblia API (free tier).
+# In Render: New → Blueprint → connect this repo. Then set DATABASE_URL (from Neon) and WEB_URL.
+services:
+  - type: web
+    name: ibiblia-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: .
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @ibiblia/api build
+    startCommand: pnpm --filter @ibiblia/api start:prod
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL
+        sync: false # paste your Neon connection string in the dashboard
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WEB_URL
+        sync: false # your Vercel site URL, e.g. https://ibiblia.vercel.app

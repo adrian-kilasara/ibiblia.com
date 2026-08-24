@@ -1,0 +1,197 @@
+/**
+ * iBiblia design tokens.
+ *
+ * Brand: white-dominant canvas, deep navy for structure & typography, warm gold as accent only.
+ * HSL channels (no hsl() wrapper) so Tailwind's `hsl(var(--x) / <alpha>)` works.
+ * Plain CSS (no @layer / @tailwind) so it can be imported directly by any app; element-level
+ * base rules keep specificity 0–1 and always yield to Tailwind utility classes.
+ *
+ * Reference brand hexes:
+ *   Navy    #2E2B4D  -> 245 30% 24%
+ *   Gold    #D7B66C  -> 41 55% 63%
+ *   White   #FFFFFF
+ *   Surface #F8F8F8  -> 0 0% 97%
+ *   Text    #202020  -> 0 0% 13%
+ */
+
+:root {
+  --background: 0 0% 100%; /* white */
+  /* Text is deep brand-navy, never pure black, for a warmer, more colourful feel. */
+  --foreground: 245 32% 18%;
+
+  --surface: 240 33% 97%; /* faint navy-tinted panel */
+
+  --card: 0 0% 100%;
+  --card-foreground: 245 32% 18%;
+
+  --primary: 245 30% 24%; /* navy #2E2B4D */
+  --primary-foreground: 0 0% 100%;
+
+  --navy: 245 30% 24%;
+  --navy-foreground: 0 0% 100%;
+
+  /* Gold reserved for accents/CTAs/icons */
+  --gold: 41 55% 63%; /* #D7B66C */
+  --gold-foreground: 245 30% 18%;
+
+  --secondary: 0 0% 97%;
+  --secondary-foreground: 245 30% 24%;
+
+  --accent: 41 55% 63%; /* gold */
+  --accent-foreground: 245 30% 18%;
+
+  --muted: 240 30% 96%;
+  --muted-foreground: 245 16% 42%; /* navy-tinted muted, readable on white */
+
+  --destructive: 0 72% 45%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 240 22% 90%;
+  --input: 240 22% 90%;
+  --ring: 41 55% 63%;
+
+  /* Eyebrow/label accent — a deep goldenrod that stays legible on white. */
+  --eyebrow: 40 62% 38%;
+
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: 245 32% 12%; /* deep navy-black canvas */
+  --foreground: 0 0% 96%;
+
+  --surface: 245 28% 16%;
+
+  --card: 245 30% 15%;
+  --card-foreground: 0 0% 96%;
+
+  /* Alternating design in dark mode: primary (hero, headers, footer, feature bands) is GOLD
+     with deep-navy text; the other sections stay dark blue with light text. */
+  --primary: 41 58% 62%;
+  --primary-foreground: 245 40% 14%;
+
+  --navy: 245 33% 26%;
+  --navy-foreground: 0 0% 98%;
+
+  --gold: 41 60% 66%;
+  --gold-foreground: 245 32% 12%;
+
+  --secondary: 245 28% 20%;
+  --secondary-foreground: 0 0% 96%;
+
+  --accent: 41 60% 66%;
+  --accent-foreground: 245 32% 12%;
+
+  --muted: 245 24% 22%;
+  --muted-foreground: 245 12% 70%;
+
+  --destructive: 0 62% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 245 20% 26%;
+  --input: 245 20% 26%;
+  --ring: 41 60% 66%;
+
+  /* Bright gold eyebrow on the dark-blue sections. */
+  --eyebrow: 41 60% 66%;
+}
+
+/* Bold (gold/navy) sections flip the eyebrow so it reads on the strong background:
+   light mode = navy section → gold eyebrow; dark mode = gold section → deep-navy eyebrow. */
+.section-bold {
+  --eyebrow: 41 58% 60%;
+}
+.dark .section-bold {
+  --eyebrow: 245 45% 16%;
+}
+
+/* ─────── Alternating gold ↔ dark-blue sections (readability) ───────
+   Gold sections use .bg-primary (gold in dark, navy in light) with deep-navy/white text.  */
+
+/* On gold sections, section-level gold/primary accents would be gold-on-gold → flip to the
+   section foreground so they read. */
+.dark .bg-primary .text-gold,
+.dark .bg-primary .text-primary {
+  color: hsl(var(--primary-foreground));
+}
+/* …but CARDS on gold sections keep their own dark surface, so their accents stay gold/primary. */
+.dark .bg-primary .bg-card .text-gold {
+  color: hsl(var(--gold));
+}
+.dark .bg-primary .bg-card .text-primary {
+  color: hsl(var(--primary));
+}
+
+/* Bold (gold/navy) sections: section-level muted text adopts the section foreground so
+   descriptions and labels stay readable on the strong background. */
+.section-bold {
+  --muted-foreground: var(--primary-foreground);
+}
+/* Cards and inset panels always restore their own light/dark context for muted text and gold
+   accents, regardless of the section tone they sit in. */
+.bg-card,
+.bg-surface {
+  --muted-foreground: 245 16% 42%;
+  --eyebrow: 40 62% 38%;
+}
+.dark .bg-card,
+.dark .bg-surface {
+  --muted-foreground: 245 12% 70%;
+  --eyebrow: 41 60% 66%;
+}
+
+body {
+  /* Base text colour is brand navy (light) / near-white (dark) — never plain black. */
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  font-feature-settings: "kern", "liga";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  line-height: 1.7;
+}
+
+/* Long-form paragraphs: comfortable measure + rhythm so prose reads like a book. */
+p {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), Georgia, ui-serif, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+/* ───────────────── Liquid glass (Apple-style frosted material) ─────────────────
+   Translucent, blurred, saturated surface with an inner top highlight. Works over
+   colored/photo backgrounds (hero, cards, status bubbles). */
+.liquid-glass {
+  background-color: rgba(255, 255, 255, 0.12);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -10px 24px rgba(255, 255, 255, 0.05),
+    0 8px 30px -8px rgba(0, 0, 0, 0.35);
+}
+.liquid-glass:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+/* On light surfaces, tint the glass toward navy so it reads as a material, not a smudge. */
+.liquid-glass-dark {
+  background-color: hsl(var(--primary) / 0.08);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid hsl(var(--primary) / 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 8px 24px -12px rgba(0, 0, 0, 0.25);
+}

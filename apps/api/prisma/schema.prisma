@@ -1,0 +1,358 @@
+// iBiblia data model — Bible translation, publishing, distribution CMS.
+// Postgres. Money stored as integer minor units (cents). Media URLs point at object storage.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────── Enums ───────────────────────────
+
+enum UserRole {
+  ADMIN
+  EDITOR
+}
+
+enum ProjectStatus {
+  UPCOMING
+  IN_PROGRESS
+  COMPLETED
+  NEEDS_FUNDING
+}
+
+enum PublicationCategory {
+  BIBLE
+  DEVOTIONAL
+  STUDY_GUIDE
+  CHILDREN
+  MAGAZINE
+  AUDIO
+  VIDEO
+}
+
+enum PublicationFormat {
+  PDF
+  EPUB
+  AUDIO
+  PRINT
+  VIDEO
+}
+
+enum MediaType {
+  VIDEO
+  PODCAST
+  AUDIO
+}
+
+enum TestimonyRole {
+  MISSIONARY
+  TRANSLATOR
+  READER
+  PASTOR
+}
+
+enum MissionAreaKey {
+  TRANSLATION
+  PUBLISHING
+  DIGITAL
+  DISTRIBUTION
+  INNOVATION
+}
+
+enum DonationDesignation {
+  TRANSLATION
+  PUBLISHING
+  DISTRIBUTION
+  TECHNOLOGY
+  GENERAL
+}
+
+enum DonationProvider {
+  STRIPE
+  PAYSTACK
+  FLUTTERWAVE
+}
+
+enum DonationStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum DonationInterval {
+  ONE_TIME
+  MONTHLY
+}
+
+enum SubmissionType {
+  VOLUNTEER
+  PARTNER
+  CONTACT
+  PRAYER
+  NEWSLETTER
+}
+
+// ─────────────────────────── Auth ───────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         UserRole @default(EDITOR)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─────────────────────────── Content ───────────────────────────
+
+/// Generic CMS-managed page (About, Statement of Faith, etc.) with block-based content.
+model Page {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  /// Freeform rich text (e.g. the Donate invitation + bank/transfer details).
+  body           String?
+  blocks         Json     @default("[]")
+  seoTitle       String?
+  seoDescription String?
+  published      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+/// Animated homepage impact counters.
+model ImpactStat {
+  id     String  @id @default(cuid())
+  label  String
+  value  Int
+  suffix String?
+  order  Int     @default(0)
+}
+
+model Language {
+  id           String        @id @default(cuid())
+  name         String
+  code         String        @unique
+  region       String?
+  projects     Project[]
+  publications Publication[]
+}
+
+model Country {
+  id       String    @id @default(cuid())
+  name     String
+  code     String    @unique
+  projects Project[]
+}
+
+model MissionArea {
+  id      String         @id @default(cuid())
+  key     MissionAreaKey @unique
+  slug    String         @unique
+  title   String
+  summary String
+  process String?
+  impact  String?
+  images  String[]       @default([])
+  /// External links for more info / application / sites: [{ "label": "...", "url": "..." }]
+  links   Json           @default("[]")
+  order   Int            @default(0)
+}
+
+model Project {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  title         String
+  language      Language?     @relation(fields: [languageId], references: [id])
+  languageId    String?
+  country       Country?      @relation(fields: [countryId], references: [id])
+  countryId     String?
+  region        String?
+  status        ProjectStatus @default(IN_PROGRESS)
+  progressPct   Int           @default(0)
+  fundingNeeded Int? // cents
+  fundingRaised Int? // cents
+  team          String?
+  summary       String
+  body          String?
+  coverImageUrl String?
+  gallery       String[]      @default([])
+  featured      Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+  @@index([featured])
+}
+
+model Publication {
+  id            String              @id @default(cuid())
+  slug          String              @unique
+  title         String
+  author        String?
+  language      Language?           @relation(fields: [languageId], references: [id])
+  languageId    String?
+  category      PublicationCategory
+  formats       PublicationFormat[] @default([])
+  coverImageUrl String?
+  description   String?
+  downloadUrl   String?
+  previewUrl    String?
+  price         Int? // cents; null = free
+  featured      Boolean             @default(false)
+  published     Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([category])
+}
+
+model MediaItem {
+  id           String    @id @default(cuid())
+  type         MediaType
+  title        String
+  url          String
+  thumbnailUrl String?
+  description  String?
+  publishedAt  DateTime  @default(now())
+}
+
+model Testimony {
+  id       String        @id @default(cuid())
+  name     String
+  role     TestimonyRole
+  quote    String
+  photoUrl String?
+  location String?
+  order    Int           @default(0)
+}
+
+model NewsPost {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  excerpt       String?
+  body          String
+  coverImageUrl String?
+  category      String?
+  published     Boolean  @default(false)
+  publishedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([published, publishedAt])
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  description String?
+  startsAt    DateTime
+  endsAt      DateTime?
+  location    String?
+  url         String?
+  createdAt   DateTime  @default(now())
+}
+
+model TeamMember {
+  id       String  @id @default(cuid())
+  name     String
+  role     String
+  bio      String?
+  photoUrl String?
+  order    Int     @default(0)
+}
+
+model Partner {
+  id      String  @id @default(cuid())
+  name    String
+  logoUrl String?
+  url     String?
+  order   Int     @default(0)
+}
+
+model GalleryImage {
+  id      String  @id @default(cuid())
+  url     String
+  caption String?
+  order   Int     @default(0)
+}
+
+model Career {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  location    String?
+  type        String?
+  description String
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+/// Editable contact details + map location shown on the Contact page (single row).
+model ContactInfo {
+  id          String   @id @default(cuid())
+  address     String?
+  email       String?
+  phone       String?
+  hours       String?
+  /// Address or "lat,lng" used to build the embedded map when no embed URL is set.
+  mapQuery    String?
+  /// Optional full Google Maps embed URL (Share → Embed a map) — overrides mapQuery.
+  mapEmbedUrl String?
+  updatedAt   DateTime @updatedAt
+}
+
+/// Metadata for a file uploaded to object storage.
+model MediaAsset {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  url       String
+  mimeType  String
+  size      Int
+  alt       String?
+  createdAt DateTime @default(now())
+}
+
+// ─────────────────────────── Interactions ───────────────────────────
+
+/// Unified inbound submission (volunteer / partner / contact / prayer / newsletter).
+model Submission {
+  id        String         @id @default(cuid())
+  type      SubmissionType
+  name      String?
+  email     String?
+  phone     String?
+  subject   String?
+  message   String?
+  payload   Json? // role-specific fields (skills, availability, org, etc.)
+  handled   Boolean        @default(false)
+  createdAt DateTime       @default(now())
+
+  @@index([type, createdAt])
+}
+
+model Donation {
+  id          String              @id @default(cuid())
+  amount      Int // cents
+  currency    String              @default("USD")
+  provider    DonationProvider
+  providerRef String? // session / transaction id
+  status      DonationStatus      @default(PENDING)
+  interval    DonationInterval    @default(ONE_TIME)
+  designation DonationDesignation @default(GENERAL)
+  donorName   String?
+  donorEmail  String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([status])
+  @@index([provider, providerRef])
+}

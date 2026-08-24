@@ -1,0 +1,5 @@
+{
+  "extends": "@ibiblia/config/tsconfig.base.json",
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ibiblia-dev",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "port": 3200,
+      "url": "http://localhost:3200"
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@ibiblia/web", "dev"],
+      "port": 3200,
+      "url": "http://localhost:3200"
+    }
+  ]
+}
