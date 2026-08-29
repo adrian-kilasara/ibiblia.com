@@ -20,15 +20,30 @@ const API_URL = /^https?:\/\//.test(RAW_API_URL) ? RAW_API_URL : `https://${RAW_
 /** Revalidate cached content every 60s (ISR). Admin edits appear within a minute. */
 const REVALIDATE = 60;
 
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 async function get<T>(path: string, fallback: T): Promise<T> {
-  try {
-    const res = await fetch(`${API_URL}/api${path}`, { next: { revalidate: REVALIDATE } });
-    if (!res.ok) return fallback;
-    return (await res.json()) as T;
-  } catch {
-    // API unreachable at build/runtime — degrade gracefully rather than crash the page.
-    return fallback;
+  // Retry through a sleeping free-tier API's 502/503 "waking up" window before giving up.
+  const maxAttempts = 6;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const res = await fetch(`${API_URL}/api${path}`, { next: { revalidate: REVALIDATE } });
+      if ([502, 503, 504].includes(res.status) && attempt < maxAttempts - 1) {
+        await wait(4000);
+        continue;
+      }
+      if (!res.ok) return fallback;
+      return (await res.json()) as T;
+    } catch {
+      if (attempt < maxAttempts - 1) {
+        await wait(4000);
+        continue;
+      }
+      // Still unreachable — degrade gracefully rather than crash the page.
+      return fallback;
+    }
   }
+  return fallback;
 }
 
 export interface HomeData {

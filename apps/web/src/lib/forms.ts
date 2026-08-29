@@ -14,12 +14,33 @@ export interface SubmissionInput {
   payload?: Record<string, unknown>;
 }
 
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export async function postSubmission(input: SubmissionInput): Promise<void> {
-  const res = await fetch(`${API_URL}/api/submissions`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
-  });
+  // Wait out a sleeping free-tier API instead of failing instantly.
+  let res: Response | undefined;
+  const maxAttempts = 15;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      res = await fetch(`${API_URL}/api/submissions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      });
+      if ([502, 503, 504].includes(res.status) && attempt < maxAttempts - 1) {
+        await wait(4000);
+        continue;
+      }
+      break;
+    } catch (err) {
+      if (attempt < maxAttempts - 1) {
+        await wait(4000);
+        continue;
+      }
+      throw new Error("Couldn't reach the server. Please try again in a moment.");
+    }
+  }
+  if (!res) throw new Error("Couldn't reach the server. Please try again in a moment.");
   if (!res.ok) {
     let message = "Something went wrong. Please try again.";
     try {

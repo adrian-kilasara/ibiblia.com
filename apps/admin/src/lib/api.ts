@@ -24,9 +24,37 @@ export class ApiError extends Error {
   }
 }
 
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Fetch that patiently waits for a sleeping free-tier API to wake: retries on network errors
+ * and on Render's 502/503/504 "waking up" responses for up to ~60s, so users see a brief
+ * loading state instead of "failed to fetch".
+ */
+async function fetchWithWake(url: string, init: RequestInit): Promise<Response> {
+  const maxAttempts = 15;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const res = await fetch(url, init);
+      if ([502, 503, 504].includes(res.status) && attempt < maxAttempts - 1) {
+        await wait(4000);
+        continue;
+      }
+      return res;
+    } catch (err) {
+      if (attempt < maxAttempts - 1) {
+        await wait(4000);
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error("Could not reach the server. Please try again.");
+}
+
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = getToken();
-  const res = await fetch(`${API_URL}/api${path}`, {
+  const res = await fetchWithWake(`${API_URL}/api${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
