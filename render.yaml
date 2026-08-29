@@ -48,10 +48,7 @@ services:
       - key: NODE_VERSION
         value: "20"
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: ibiblia-api
-          property: host
+        value: https://ibiblia-api.onrender.com
 
   # ── Admin CMS ────────────────────────────────────────────────────────
   - type: web
@@ -65,7 +62,4 @@ services:
       - key: NODE_VERSION
         value: "20"
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: ibiblia-api
-          property: host
+        value: https://ibiblia-api.onrender.com
