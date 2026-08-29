@@ -1,11 +1,27 @@
-# Render.com Blueprint for the iBiblia API (free tier).
-# In Render: New → Blueprint → connect this repo. Then set DATABASE_URL (from Neon) and WEB_URL.
+# Render.com Blueprint — provisions the WHOLE stack from this repo, free tier:
+#   • ibiblia-db     Postgres database
+#   • ibiblia-api    NestJS API (runs migrations + auto-seeds on first boot)
+#   • ibiblia-web    public website
+#   • ibiblia-admin  admin CMS
+#
+# How to use:  Render → New + → Blueprint → connect this repo → Apply.
+# Everything wires together automatically (database URL + API URL). No env vars to paste.
+#
+# Note: Render's FREE Postgres expires ~90 days after creation, and free web services sleep
+# after ~15 min idle (first visit then takes ~30–50s to wake).
+
+databases:
+  - name: ibiblia-db
+    plan: free
+    databaseName: ibiblia
+    user: ibiblia
+
 services:
+  # ── API ──────────────────────────────────────────────────────────────
   - type: web
     name: ibiblia-api
     runtime: node
     plan: free
-    region: oregon
     rootDir: .
     buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @ibiblia/api build
     startCommand: pnpm --filter @ibiblia/api start:prod
@@ -14,8 +30,42 @@ services:
       - key: NODE_VERSION
         value: "20"
       - key: DATABASE_URL
-        sync: false # paste your Neon connection string in the dashboard
+        fromDatabase:
+          name: ibiblia-db
+          property: connectionString
       - key: JWT_SECRET
         generateValue: true
-      - key: WEB_URL
-        sync: false # your Vercel site URL, e.g. https://ibiblia.vercel.app
+
+  # ── Public site ──────────────────────────────────────────────────────
+  - type: web
+    name: ibiblia-web
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @ibiblia/web build
+    startCommand: pnpm --filter @ibiblia/web start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: ibiblia-api
+          property: host
+
+  # ── Admin CMS ────────────────────────────────────────────────────────
+  - type: web
+    name: ibiblia-admin
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @ibiblia/admin build
+    startCommand: pnpm --filter @ibiblia/admin start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: ibiblia-api
+          property: host

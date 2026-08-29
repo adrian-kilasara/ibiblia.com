@@ -1,5 +1,6 @@
 /** Client-side form submission to the public API. */
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4400";
+const RAW_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4400";
+const API_URL = /^https?:\/\//.test(RAW_API_URL) ? RAW_API_URL : `https://${RAW_API_URL}`;
 
 export type SubmissionType = "VOLUNTEER" | "PARTNER" | "CONTACT" | "PRAYER" | "NEWSLETTER";
 

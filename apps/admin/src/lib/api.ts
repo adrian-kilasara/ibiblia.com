@@ -1,4 +1,5 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4400";
+const RAW_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4400";
+const API_URL = /^https?:\/\//.test(RAW_API_URL) ? RAW_API_URL : `https://${RAW_API_URL}`;
 const TOKEN_KEY = "ibiblia_admin_token";
 
 export function getToken(): string | null {

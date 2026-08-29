@@ -11,6 +11,7 @@ import { AdminModule } from "./admin/admin.module";
 import { SubmissionsModule } from "./submissions/submissions.module";
 import { DonationsModule } from "./donations/donations.module";
 import { StorageModule } from "./storage/storage.module";
+import { SeedService } from "./seed/seed.service";
 
 @Module({
   imports: [
@@ -27,5 +28,6 @@ import { StorageModule } from "./storage/storage.module";
     DonationsModule,
   ],
   controllers: [HealthController],
+  providers: [SeedService],
 })
 export class AppModule {}
