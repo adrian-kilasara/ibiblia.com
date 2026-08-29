@@ -1,0 +1,24 @@
+name: Keep Render services awake
+
+# Render's free web services sleep after ~15 min idle. This pings them every 10 minutes so
+# the site/API stay warm and visitors don't hit a cold-start "failed to fetch".
+# (GitHub Actions is free for public repos. Scheduled runs can be delayed a few minutes.)
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping services
+        run: |
+          for url in \
+            "https://ibiblia-api.onrender.com/api/health" \
+            "https://ibiblia-web.onrender.com/" \
+            "https://ibiblia-admin.onrender.com/login"; do
+            echo "Pinging $url"
+            curl -s -o /dev/null -w "  -> %{http_code} in %{time_total}s\n" --max-time 60 "$url" || echo "  -> (no response)"
+          done
