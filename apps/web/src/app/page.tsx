@@ -89,7 +89,7 @@ export default async function HomePage() {
               <br />
               Every Nation.
               <br />
-              <span className="text-gold">Every Soul.</span>
+              <span className="hero-outline">Every Soul.</span>
             </h1>
           </Reveal>
           <Reveal delay={0.12}>

@@ -122,6 +122,17 @@
   color: hsl(var(--primary));
 }
 
+/* Hero "Every Soul": on the gold (dark) hero its fill matches the gold background and a slim
+   navy stroke makes it read as an outlined word. On the navy (light) hero it stays solid gold. */
+.hero-outline {
+  color: hsl(var(--gold));
+}
+.dark .hero-outline {
+  color: hsl(var(--primary)); /* same gold as the hero background */
+  -webkit-text-stroke: 2px hsl(var(--primary-foreground)); /* navy outline (its previous colour) */
+  paint-order: stroke fill;
+}
+
 /* Bold (gold/navy) sections: section-level muted text adopts the section foreground so
    descriptions and labels stay readable on the strong background. */
 .section-bold {
