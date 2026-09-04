@@ -30,8 +30,13 @@ export default async function PublicationDetailPage({ params }: Props) {
         </Link>
 
         <div className="grid gap-12 md:grid-cols-[280px_1fr]">
-          <div className="flex aspect-[3/4] items-center justify-center rounded-lg bg-surface p-6 text-center text-sm text-muted-foreground ring-1 ring-border">
-            {pub.title}
+          <div className="flex aspect-[3/4] items-center justify-center overflow-hidden rounded-lg bg-surface p-6 text-center text-sm text-muted-foreground ring-1 ring-border">
+            {pub.coverImageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={pub.coverImageUrl} alt={pub.title} className="size-full object-cover" />
+            ) : (
+              pub.title
+            )}
           </div>
 
           <div>

@@ -31,6 +31,14 @@ export default async function NewsDetailPage({ params }: Props) {
         <Link href="/news" className="mb-8 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" /> All news
         </Link>
+        {post.coverImageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={post.coverImageUrl}
+            alt={post.title}
+            className="mb-8 aspect-[16/9] w-full rounded-lg object-cover"
+          />
+        )}
         <article className="prose prose-neutral max-w-prose dark:prose-invert">
           <p className="whitespace-pre-line text-lg leading-relaxed text-muted-foreground">
             {post.body}

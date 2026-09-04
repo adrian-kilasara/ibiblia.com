@@ -228,8 +228,13 @@ export default async function HomePage() {
             {data.featuredProjects.map((p, i) => (
               <Reveal key={p.id} delay={i * 0.06}>
                 <Card className="flex h-full flex-col overflow-hidden">
-                  <div className="relative flex aspect-[16/10] items-center justify-center bg-gradient-to-br from-navy to-navy/70 text-xs text-white/50">
-                    Project photography
+                  <div className="relative flex aspect-[16/10] items-center justify-center overflow-hidden bg-gradient-to-br from-navy to-navy/70 text-xs text-white/50">
+                    {p.coverImageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.coverImageUrl} alt={p.title} className="absolute inset-0 size-full object-cover" />
+                    ) : (
+                      "Project photography"
+                    )}
                     <span className="liquid-glass absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-semibold text-white">
                       {STATUS_LABEL[p.status] ?? p.status}
                     </span>
@@ -271,8 +276,13 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
             {data.publications.map((pub) => (
               <Link key={pub.id} href={`/publications/${pub.slug}`} className="group">
-                <div className="flex aspect-[3/4] items-center justify-center rounded-lg bg-surface text-center text-xs text-muted-foreground ring-1 ring-border transition-shadow group-hover:shadow-md">
-                  {pub.title}
+                <div className="flex aspect-[3/4] items-center justify-center overflow-hidden rounded-lg bg-surface text-center text-xs text-muted-foreground ring-1 ring-border transition-shadow group-hover:shadow-md">
+                  {pub.coverImageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={pub.coverImageUrl} alt={pub.title} className="size-full object-cover" />
+                  ) : (
+                    pub.title
+                  )}
                 </div>
                 <p className="mt-2 line-clamp-1 text-sm font-medium">{pub.title}</p>
               </Link>
@@ -326,8 +336,13 @@ export default async function HomePage() {
             {data.latestNews.map((post) => (
               <Link key={post.id} href={`/news/${post.slug}`} className="group">
                 <Card className="h-full group-hover:shadow-md">
-                  <div className="flex aspect-[16/9] items-center justify-center rounded-t-lg bg-surface text-xs text-muted-foreground">
-                    {post.category ?? "News"}
+                  <div className="flex aspect-[16/9] items-center justify-center overflow-hidden rounded-t-lg bg-surface text-xs text-muted-foreground">
+                    {post.coverImageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={post.coverImageUrl} alt={post.title} className="size-full object-cover" />
+                    ) : (
+                      (post.category ?? "News")
+                    )}
                   </div>
                   <CardContent className="pt-5">
                     <p className="text-xs text-muted-foreground">

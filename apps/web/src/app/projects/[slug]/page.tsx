@@ -42,9 +42,27 @@ export default async function ProjectDetailPage({ params }: Props) {
 
         <div className="grid gap-12 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <div className="flex aspect-[16/9] items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 text-sm text-primary-foreground/50">
-              Project photography
+            <div className="flex aspect-[16/9] items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-primary to-primary/70 text-sm text-primary-foreground/50">
+              {p.coverImageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.coverImageUrl} alt={p.title} className="size-full object-cover" />
+              ) : (
+                "Project photography"
+              )}
             </div>
+            {p.gallery && p.gallery.length > 0 && (
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                {p.gallery.map((src) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={src}
+                    src={src}
+                    alt={p.title}
+                    className="aspect-square w-full rounded-md object-cover"
+                  />
+                ))}
+              </div>
+            )}
             {p.body && <p className="mt-8 whitespace-pre-line text-muted-foreground">{p.body}</p>}
           </div>
 

@@ -27,8 +27,13 @@ export default async function NewsPage() {
             {posts.map((post) => (
               <Link key={post.id} href={`/news/${post.slug}`} className="group">
                 <Card className="h-full group-hover:shadow-md">
-                  <div className="flex aspect-[16/9] items-center justify-center rounded-t-lg bg-surface text-xs text-muted-foreground">
-                    {post.category ?? "News"}
+                  <div className="flex aspect-[16/9] items-center justify-center overflow-hidden rounded-t-lg bg-surface text-xs text-muted-foreground">
+                    {post.coverImageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={post.coverImageUrl} alt={post.title} className="size-full object-cover" />
+                    ) : (
+                      (post.category ?? "News")
+                    )}
                   </div>
                   <CardContent className="pt-5">
                     <p className="text-xs text-muted-foreground">

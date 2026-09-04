@@ -52,8 +52,13 @@ export default async function ProjectsPage({ searchParams }: Props) {
             {projects.map((p) => (
               <Link key={p.id} href={`/projects/${p.slug}`} className="group">
                 <Card className="flex h-full flex-col overflow-hidden group-hover:shadow-md">
-                  <div className="relative flex aspect-[16/10] items-center justify-center bg-gradient-to-br from-primary to-primary/70 text-xs text-primary-foreground/50">
-                    Project photography
+                  <div className="relative flex aspect-[16/10] items-center justify-center overflow-hidden bg-gradient-to-br from-primary to-primary/70 text-xs text-primary-foreground/50">
+                    {p.coverImageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.coverImageUrl} alt={p.title} className="absolute inset-0 size-full object-cover" />
+                    ) : (
+                      "Project photography"
+                    )}
                     <span className="liquid-glass absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-semibold text-white">
                       {STATUS_LABEL[p.status] ?? p.status}
                     </span>

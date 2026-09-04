@@ -37,8 +37,13 @@ export default async function PublicationsPage({ searchParams }: Props) {
             {publications.map((pub) => (
               <div key={pub.id} className="group flex flex-col">
                 <Link href={`/publications/${pub.slug}`}>
-                  <div className="flex aspect-[3/4] items-center justify-center rounded-lg bg-surface p-4 text-center text-sm text-muted-foreground ring-1 ring-border transition-shadow group-hover:shadow-md">
-                    {pub.title}
+                  <div className="flex aspect-[3/4] items-center justify-center overflow-hidden rounded-lg bg-surface p-4 text-center text-sm text-muted-foreground ring-1 ring-border transition-shadow group-hover:shadow-md">
+                    {pub.coverImageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={pub.coverImageUrl} alt={pub.title} className="size-full object-cover" />
+                    ) : (
+                      pub.title
+                    )}
                   </div>
                 </Link>
                 <div className="mt-3 flex flex-1 flex-col">

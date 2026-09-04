@@ -28,6 +28,19 @@ export default async function MissionAreaPage({ params }: Props) {
         <Link href="/mission" className="mb-8 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" /> All mission areas
         </Link>
+        {area.images && area.images.length > 0 && (
+          <div className="mb-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {area.images.map((src) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={src}
+                src={src}
+                alt={area.title}
+                className="aspect-[4/3] w-full rounded-lg object-cover"
+              />
+            ))}
+          </div>
+        )}
         <div className="grid gap-10 lg:grid-cols-2">
           {area.process && (
             <div>
