@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Delete,
   Param,
   Req,
   Res,
@@ -99,6 +100,15 @@ export class UploadsController {
       data: { url },
       select: ASSET_SELECT,
     });
+  }
+
+  /** Remove an image from the gallery. */
+  @Delete(":id")
+  async remove(@Param("id") id: string) {
+    const asset = await this.prisma.mediaAsset.findUnique({ where: { id }, select: { id: true } });
+    if (!asset) throw new NotFoundException("Image not found");
+    await this.prisma.mediaAsset.delete({ where: { id } });
+    return { deleted: true };
   }
 }
 

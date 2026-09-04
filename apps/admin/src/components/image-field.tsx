@@ -126,10 +126,23 @@ function GalleryPicker({
   onClose: () => void;
 }) {
   const [assets, setAssets] = React.useState<MediaAsset[] | null>(null);
+  const [deleting, setDeleting] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     api.gallery().then(setAssets).catch(() => setAssets([]));
   }, []);
+
+  async function onDelete(id: string) {
+    setDeleting(id);
+    try {
+      await api.deleteUpload(id);
+      setAssets((prev) => (prev ? prev.filter((a) => a.id !== id) : prev));
+    } catch {
+      /* ignore — leave the tile in place */
+    } finally {
+      setDeleting(null);
+    }
+  }
 
   return (
     <div
@@ -155,15 +168,33 @@ function GalleryPicker({
         ) : (
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
             {assets.map((a) => (
-              <button
+              <div
                 key={a.id}
-                type="button"
-                onClick={() => onPick(a.url)}
-                className="aspect-square overflow-hidden rounded-md border border-border transition-shadow hover:shadow-md"
+                className="group relative aspect-square overflow-hidden rounded-md border border-border transition-shadow hover:shadow-md"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={a.url} alt={a.alt ?? ""} className="size-full object-cover" />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => onPick(a.url)}
+                  className="size-full"
+                  aria-label="Use this image"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={a.url} alt={a.alt ?? ""} className="size-full object-cover" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDelete(a.id)}
+                  disabled={deleting === a.id}
+                  aria-label="Delete image"
+                  className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white opacity-0 transition-opacity hover:bg-black/80 group-hover:opacity-100"
+                >
+                  {deleting === a.id ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <X className="size-3.5" />
+                  )}
+                </button>
+              </div>
             ))}
           </div>
         )}

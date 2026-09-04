@@ -106,6 +106,10 @@ export const api = {
   /** Previously uploaded images (the gallery). */
   gallery: () => request<MediaAsset[]>("/admin/uploads"),
 
+  /** Delete an image from the gallery. */
+  deleteUpload: (id: string) =>
+    request<{ deleted: boolean }>(`/admin/uploads/${id}`, { method: "DELETE" }),
+
   /** Upload a local image file; returns the stored asset (with a public URL). */
   uploadImage: async (file: File): Promise<MediaAsset> => {
     const token = getToken();
