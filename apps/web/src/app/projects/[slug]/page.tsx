@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button, Progress, Section } from "@ibiblia/ui";
 import { site, formatMoney } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
-import { VideoBlock, GalleryBlock, LinksBlock } from "@/components/media-blocks";
+import { VideoBlock, GalleryBlock, LinksBlock, ContentBlocks } from "@/components/media-blocks";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -51,10 +51,16 @@ export default async function ProjectDetailPage({ params }: Props) {
                 "Project photography"
               )}
             </div>
-            <VideoBlock url={p.videoUrl} title={p.title} className="mt-4" />
-            <GalleryBlock images={p.gallery} alt={p.title} className="mt-4" />
-            {p.body && <p className="mt-8 whitespace-pre-line text-muted-foreground">{p.body}</p>}
-            <LinksBlock links={p.links} className="mt-10" />
+            {p.content && p.content.length > 0 ? (
+              <ContentBlocks blocks={p.content} title={p.title} className="mt-8" />
+            ) : (
+              <>
+                <VideoBlock url={p.videoUrl} title={p.title} className="mt-4" />
+                <GalleryBlock images={p.gallery} alt={p.title} className="mt-4" />
+                {p.body && <p className="mt-8 whitespace-pre-line text-muted-foreground">{p.body}</p>}
+                <LinksBlock links={p.links} className="mt-10" />
+              </>
+            )}
           </div>
 
           <aside className="lg:col-span-1">

@@ -16,6 +16,7 @@ export type FieldType =
   | "date"
   | "json"
   | "links" // list of { label, url } rows (PDFs, articles, resources)
+  | "blocks" // rich story: ordered text/image/video/links blocks with media inline
   | "file" // URL field with an "upload from computer" button (PDF, video, etc.)
   | "image" // single image: upload / pick from gallery
   | "image-multi"; // multiple images
@@ -97,11 +98,18 @@ export const RESOURCES: ResourceUi[] = [
       { name: "slug", label: "Slug", type: "text", required: true },
       { name: "summary", label: "Summary", type: "textarea", required: true, help: "One or two sentences shown on cards and at the top of the page." },
       {
+        name: "content",
+        label: "Story Builder",
+        type: "blocks",
+        hideInTable: true,
+        help: "Compose the page: add paragraphs and drop photos, videos, and links between them, in any order. When used, this replaces the plain body and separate media sections below.",
+      },
+      {
         name: "body",
-        label: "Full Story",
+        label: "Body (plain — optional)",
         type: "textarea",
         hideInTable: true,
-        help: "Tell the story: the need, who it reaches, progress so far, and why it matters. This is what convinces donors.",
+        help: "A simple text-only alternative. Only used if the Story Builder above is empty.",
       },
       { name: "status", label: "Status", type: "select", options: PROJECT_STATUS },
       { name: "progressPct", label: "Progress %", type: "number" },
@@ -149,7 +157,14 @@ export const RESOURCES: ResourceUi[] = [
       { name: "category", label: "Category", type: "select", options: PUB_CATEGORY, required: true },
       { name: "formats", label: "Formats", type: "multiselect", options: PUB_FORMAT },
       { name: "languageId", label: "Language", type: "relation", relation: "languages" },
-      { name: "description", label: "Description", type: "textarea", hideInTable: true, help: "What it is, who it's for, and why it matters." },
+      {
+        name: "content",
+        label: "Story Builder",
+        type: "blocks",
+        hideInTable: true,
+        help: "Compose the page with paragraphs, photos, videos, and links in any order. Replaces the plain description when used.",
+      },
+      { name: "description", label: "Description (plain — optional)", type: "textarea", hideInTable: true, help: "Simple text alternative, used only if the Story Builder is empty." },
       { name: "coverImageUrl", label: "Cover Image", type: "image", hideInTable: true },
       {
         name: "gallery",
@@ -203,7 +218,14 @@ export const RESOURCES: ResourceUi[] = [
       { name: "title", label: "Title", type: "text", required: true },
       { name: "slug", label: "Slug", type: "text", required: true },
       { name: "excerpt", label: "Excerpt", type: "textarea", help: "Short summary shown on cards and previews." },
-      { name: "body", label: "Body", type: "textarea", required: true, hideInTable: true, help: "The full article." },
+      {
+        name: "content",
+        label: "Story Builder",
+        type: "blocks",
+        hideInTable: true,
+        help: "Compose the article with paragraphs, photos, videos, and links in any order. Replaces the plain body when used.",
+      },
+      { name: "body", label: "Body (plain)", type: "textarea", hideInTable: true, help: "The full article as plain text. Used if the Story Builder is empty." },
       { name: "category", label: "Category", type: "text" },
       { name: "coverImageUrl", label: "Cover Image", type: "image", hideInTable: true },
       {

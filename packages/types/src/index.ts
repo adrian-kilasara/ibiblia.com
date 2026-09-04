@@ -76,6 +76,13 @@ export interface LinkItem {
   url: string;
 }
 
+/** One block in a rich, composable story. Media blocks sit inline between text blocks. */
+export type ContentBlock =
+  | { type: "text"; text: string }
+  | { type: "image"; url: string; caption?: string }
+  | { type: "video"; url: string }
+  | { type: "links"; items: LinkItem[] };
+
 export interface Project {
   id: ID;
   slug: string;
@@ -94,6 +101,7 @@ export interface Project {
   gallery?: string[];
   videoUrl?: string | null;
   links?: LinkItem[];
+  content?: ContentBlock[];
   featured: boolean;
 }
 
@@ -113,6 +121,7 @@ export interface Publication {
   gallery?: string[];
   videoUrl?: string | null;
   links?: LinkItem[];
+  content?: ContentBlock[];
 }
 
 export interface Testimony {
@@ -129,12 +138,13 @@ export interface NewsPost {
   slug: string;
   title: string;
   excerpt?: string | null;
-  body: string;
+  body?: string | null;
   coverImageUrl?: string | null;
   category?: string | null;
   gallery?: string[];
   videoUrl?: string | null;
   links?: LinkItem[];
+  content?: ContentBlock[];
   publishedAt: string;
 }
 

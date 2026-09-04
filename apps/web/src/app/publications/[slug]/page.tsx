@@ -5,7 +5,7 @@ import { ArrowLeft, Download, BookOpen } from "lucide-react";
 import { Badge, Button, Section } from "@ibiblia/ui";
 import { site, formatMoney } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
-import { VideoBlock, GalleryBlock, LinksBlock } from "@/components/media-blocks";
+import { VideoBlock, GalleryBlock, LinksBlock, ContentBlocks } from "@/components/media-blocks";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -50,10 +50,15 @@ export default async function PublicationDetailPage({ params }: Props) {
               ))}
             </div>
 
-            {pub.description && <p className="mt-6 whitespace-pre-line text-muted-foreground">{pub.description}</p>}
-
-            <VideoBlock url={pub.videoUrl} title={pub.title} className="mt-6" />
-            <GalleryBlock images={pub.gallery} alt={pub.title} className="mt-4" />
+            {pub.content && pub.content.length > 0 ? (
+              <ContentBlocks blocks={pub.content} title={pub.title} className="mt-6" />
+            ) : (
+              <>
+                {pub.description && <p className="mt-6 whitespace-pre-line text-muted-foreground">{pub.description}</p>}
+                <VideoBlock url={pub.videoUrl} title={pub.title} className="mt-6" />
+                <GalleryBlock images={pub.gallery} alt={pub.title} className="mt-4" />
+              </>
+            )}
 
             <div className="mt-8 flex flex-wrap gap-3">
               {pub.previewUrl && (

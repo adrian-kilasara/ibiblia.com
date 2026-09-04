@@ -187,6 +187,9 @@ model Project {
   videoUrl      String?
   /// Related resources shown as buttons: [{ "label": "Project brief (PDF)", "url": "https://…" }]
   links         Json          @default("[]")
+  /// Rich story: ordered blocks (text/image/video/links) with media inline between paragraphs.
+  /// When set, it replaces the plain body + separate media sections on the page.
+  content       Json          @default("[]")
   featured      Boolean       @default(false)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
@@ -214,6 +217,8 @@ model Publication {
   videoUrl      String?
   /// Related links shown as buttons: [{ "label": "Sample chapter (PDF)", "url": "https://…" }]
   links         Json                @default("[]")
+  /// Rich content: ordered blocks (text/image/video/links) with media inline.
+  content       Json                @default("[]")
   featured      Boolean             @default(false)
   published     Boolean             @default(true)
   createdAt     DateTime            @default(now())
@@ -247,7 +252,7 @@ model NewsPost {
   slug          String   @unique
   title         String
   excerpt       String?
-  body          String
+  body          String?
   coverImageUrl String?
   category      String?
   gallery       String[] @default([])
@@ -255,6 +260,8 @@ model NewsPost {
   videoUrl      String?
   /// Related links shown as buttons: [{ "label": "Read the report", "url": "https://…" }]
   links         Json     @default("[]")
+  /// Rich content: ordered blocks (text/image/video/links) with media inline.
+  content       Json     @default("[]")
   published     Boolean  @default(false)
   publishedAt   DateTime @default(now())
   createdAt     DateTime @default(now())

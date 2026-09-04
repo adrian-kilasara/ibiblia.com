@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Plus, X, Upload, Loader2 } from "lucide-react";
+import { Plus, X, Upload, Loader2, ChevronUp, ChevronDown, Type, Image as ImageIcon, Video, Link2 } from "lucide-react";
 import { Button } from "@ibiblia/ui";
 import { api } from "@/lib/api";
 import { findResource, type FieldConfig, type ResourceUi } from "@/lib/resources";
@@ -11,6 +11,11 @@ import { ImageField, MultiImageField } from "./image-field";
 
 type Row = Record<string, unknown>;
 type LinkRow = { label: string; url: string };
+type Block =
+  | { type: "text"; text: string }
+  | { type: "image"; url: string; caption?: string }
+  | { type: "video"; url: string }
+  | { type: "links"; items: LinkRow[] };
 
 interface Props {
   resource: ResourceUi;
@@ -232,6 +237,8 @@ function renderField(
           onChange={(url) => set(f.name, url)}
         />
       );
+    case "blocks":
+      return <BlocksField value={(value as Block[]) ?? []} onChange={(b) => set(f.name, b)} />;
     default:
       return (
         <Input
@@ -390,13 +397,112 @@ function LinksField({
   );
 }
 
+/** Story builder: an ordered list of text / image / video / links blocks. */
+function BlocksField({ value, onChange }: { value: Block[]; onChange: (blocks: Block[]) => void }) {
+  const blocks = value ?? [];
+
+  function setAt(i: number, block: Block) {
+    onChange(blocks.map((b, idx) => (idx === i ? block : b)));
+  }
+  function addBlock(block: Block) {
+    onChange([...blocks, block]);
+  }
+  function removeAt(i: number) {
+    onChange(blocks.filter((_, idx) => idx !== i));
+  }
+  function move(i: number, dir: -1 | 1) {
+    const j = i + dir;
+    if (j < 0 || j >= blocks.length) return;
+    const next = [...blocks];
+    const a = next[i]!;
+    next[i] = next[j]!;
+    next[j] = a;
+    onChange(next);
+  }
+
+  const LABEL: Record<Block["type"], string> = {
+    text: "Paragraph",
+    image: "Image",
+    video: "Video",
+    links: "Links",
+  };
+
+  return (
+    <div className="space-y-3">
+      {blocks.map((block, i) => (
+        <div key={i} className="rounded-lg border border-border bg-surface/40 p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {LABEL[block.type]}
+            </span>
+            <div className="flex gap-1">
+              <Button type="button" size="sm" variant="ghost" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up">
+                <ChevronUp className="size-4" />
+              </Button>
+              <Button type="button" size="sm" variant="ghost" onClick={() => move(i, 1)} disabled={i === blocks.length - 1} aria-label="Move down">
+                <ChevronDown className="size-4" />
+              </Button>
+              <Button type="button" size="sm" variant="ghost" onClick={() => removeAt(i)} aria-label="Delete block">
+                <X className="size-4" />
+              </Button>
+            </div>
+          </div>
+
+          {block.type === "text" && (
+            <Textarea
+              value={block.text}
+              placeholder="Write a paragraph…"
+              onChange={(e) => setAt(i, { type: "text", text: e.target.value })}
+            />
+          )}
+          {block.type === "image" && (
+            <div className="space-y-2">
+              <ImageField value={block.url} onChange={(url) => setAt(i, { ...block, type: "image", url })} />
+              <Input
+                placeholder="Caption (optional)"
+                value={block.caption ?? ""}
+                onChange={(e) => setAt(i, { ...block, type: "image", caption: e.target.value })}
+              />
+            </div>
+          )}
+          {block.type === "video" && (
+            <FileField
+              value={block.url}
+              accept="video/*"
+              onChange={(url) => setAt(i, { type: "video", url })}
+            />
+          )}
+          {block.type === "links" && (
+            <LinksField value={block.items} onChange={(items) => setAt(i, { type: "links", items })} />
+          )}
+        </div>
+      ))}
+
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" size="sm" variant="outline" onClick={() => addBlock({ type: "text", text: "" })}>
+          <Type className="size-4" /> Paragraph
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={() => addBlock({ type: "image", url: "", caption: "" })}>
+          <ImageIcon className="size-4" /> Image
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={() => addBlock({ type: "video", url: "" })}>
+          <Video className="size-4" /> Video
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={() => addBlock({ type: "links", items: [] })}>
+          <Link2 className="size-4" /> Links
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function seed(resource: ResourceUi, initial?: Row): Row {
   if (initial) return { ...initial };
   const base: Row = {};
   for (const f of resource.fields) {
     if (f.type === "boolean") base[f.name] = false;
     else if (f.type === "multiselect") base[f.name] = [];
-    else if (f.type === "links") base[f.name] = [];
+    else if (f.type === "links" || f.type === "blocks") base[f.name] = [];
   }
   return base;
 }
@@ -420,6 +526,29 @@ function serialize(resource: ResourceUi, values: Row): Row {
       v = rows
         .map((r) => ({ label: (r.label ?? "").trim(), url: (r.url ?? "").trim() }))
         .filter((r) => r.url);
+    }
+    if (f.type === "blocks") {
+      const arr = Array.isArray(v) ? (v as Block[]) : [];
+      v = arr
+        .map((b): Block => {
+          if (b.type === "image") {
+            const caption = (b.caption ?? "").trim();
+            return { type: "image", url: (b.url ?? "").trim(), ...(caption ? { caption } : {}) };
+          }
+          if (b.type === "video") return { type: "video", url: (b.url ?? "").trim() };
+          if (b.type === "links") {
+            const items = (b.items ?? [])
+              .map((r) => ({ label: (r.label ?? "").trim(), url: (r.url ?? "").trim() }))
+              .filter((r) => r.url);
+            return { type: "links", items };
+          }
+          return { type: "text", text: b.text ?? "" };
+        })
+        .filter((b) => {
+          if (b.type === "text") return b.text.trim().length > 0;
+          if (b.type === "links") return b.items.length > 0;
+          return b.url.length > 0;
+        });
     }
     if (v !== undefined) out[f.name] = v;
   }

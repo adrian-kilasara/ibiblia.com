@@ -1,5 +1,5 @@
 import { ExternalLink, FileText } from "lucide-react";
-import type { LinkItem } from "@ibiblia/types";
+import type { LinkItem, ContentBlock } from "@ibiblia/types";
 import { videoEmbedUrl, isVideoFile } from "@/lib/media";
 
 /** Embedded YouTube/Vimeo player, or an inline <video> for a direct file URL. */
@@ -44,13 +44,48 @@ export function GalleryBlock({ images, alt, className }: { images?: string[] | n
   );
 }
 
+/** Renders composable story blocks in order, with media inline between paragraphs. */
+export function ContentBlocks({ blocks, title, className }: { blocks?: ContentBlock[] | null; title: string; className?: string }) {
+  if (!blocks || blocks.length === 0) return null;
+  return (
+    <div className={`space-y-6 ${className ?? ""}`}>
+      {blocks.map((block, i) => {
+        switch (block.type) {
+          case "text":
+            return block.text ? (
+              <p key={i} className="whitespace-pre-line text-lg leading-relaxed text-muted-foreground">
+                {block.text}
+              </p>
+            ) : null;
+          case "image":
+            return block.url ? (
+              <figure key={i}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={block.url} alt={block.caption || title} className="w-full rounded-lg object-cover" />
+                {block.caption ? (
+                  <figcaption className="mt-2 text-center text-sm text-muted-foreground">{block.caption}</figcaption>
+                ) : null}
+              </figure>
+            ) : null;
+          case "video":
+            return <VideoBlock key={i} url={block.url} title={title} />;
+          case "links":
+            return <LinksBlock key={i} links={block.items} heading="" />;
+          default:
+            return null;
+        }
+      })}
+    </div>
+  );
+}
+
 /** Row of resource buttons (PDFs, articles, related links). */
 export function LinksBlock({ links, heading = "Resources & links", className }: { links?: LinkItem[] | null; heading?: string; className?: string }) {
   if (!links || links.length === 0) return null;
   return (
     <div className={className}>
-      <h2 className="font-heading text-xl font-semibold">{heading}</h2>
-      <div className="mt-4 flex flex-wrap gap-3">
+      {heading ? <h2 className="font-heading text-xl font-semibold">{heading}</h2> : null}
+      <div className={`flex flex-wrap gap-3 ${heading ? "mt-4" : ""}`}>
         {links.map((l) => {
           const isPdf = /\.pdf(\?.*)?$/i.test(l.url);
           const Icon = isPdf ? FileText : ExternalLink;
