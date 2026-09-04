@@ -15,6 +15,7 @@ export type FieldType =
   | "relation"
   | "date"
   | "json"
+  | "links" // list of { label, url } rows (PDFs, articles, resources)
   | "image" // single image: upload / pick from gallery
   | "image-multi"; // multiple images
 
@@ -75,10 +76,10 @@ export const RESOURCES: ResourceUi[] = [
       { name: "images", label: "Images", type: "image-multi", hideInTable: true },
       {
         name: "links",
-        label: "External Links (JSON)",
-        type: "json",
+        label: "External Links",
+        type: "links",
         hideInTable: true,
-        help: 'Array like [{"label":"Apply here","url":"https://…"}]',
+        help: "Buttons shown on the page — e.g. an application form or info sheet.",
       },
       { name: "order", label: "Order", type: "number" },
     ],
@@ -91,8 +92,14 @@ export const RESOURCES: ResourceUi[] = [
     fields: [
       { name: "title", label: "Title", type: "text", required: true },
       { name: "slug", label: "Slug", type: "text", required: true },
-      { name: "summary", label: "Summary", type: "textarea", required: true },
-      { name: "body", label: "Body", type: "textarea", hideInTable: true },
+      { name: "summary", label: "Summary", type: "textarea", required: true, help: "One or two sentences shown on cards and at the top of the page." },
+      {
+        name: "body",
+        label: "Full Story",
+        type: "textarea",
+        hideInTable: true,
+        help: "Tell the story: the need, who it reaches, progress so far, and why it matters. This is what convinces donors.",
+      },
       { name: "status", label: "Status", type: "select", options: PROJECT_STATUS },
       { name: "progressPct", label: "Progress %", type: "number" },
       { name: "languageId", label: "Language", type: "relation", relation: "languages" },
@@ -102,7 +109,28 @@ export const RESOURCES: ResourceUi[] = [
       { name: "fundingNeeded", label: "Funding Needed", type: "money", hideInTable: true },
       { name: "fundingRaised", label: "Funding Raised", type: "money", hideInTable: true },
       { name: "coverImageUrl", label: "Cover Image", type: "image", hideInTable: true },
-      { name: "featured", label: "Featured", type: "boolean" },
+      {
+        name: "gallery",
+        label: "Explanatory Pictures",
+        type: "image-multi",
+        hideInTable: true,
+        help: "Extra photos shown in a gallery on the project page.",
+      },
+      {
+        name: "videoUrl",
+        label: "Project Video",
+        type: "text",
+        hideInTable: true,
+        help: "Paste a YouTube or Vimeo link — it embeds as a player on the page.",
+      },
+      {
+        name: "links",
+        label: "Links & Resources",
+        type: "links",
+        hideInTable: true,
+        help: "PDFs, brochures, articles — each becomes a button on the project page.",
+      },
+      { name: "featured", label: "Featured", type: "boolean", help: "Show this project on the homepage." },
     ],
   },
   {

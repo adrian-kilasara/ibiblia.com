@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { Plus, X } from "lucide-react";
 import { Button } from "@ibiblia/ui";
 import { api } from "@/lib/api";
 import { findResource, type FieldConfig, type ResourceUi } from "@/lib/resources";
@@ -9,6 +10,7 @@ import { Input, Select, Textarea } from "./input";
 import { ImageField, MultiImageField } from "./image-field";
 
 type Row = Record<string, unknown>;
+type LinkRow = { label: string; url: string };
 
 interface Props {
   resource: ResourceUi;
@@ -218,6 +220,10 @@ function renderField(
           onChange={(urls) => set(f.name, urls)}
         />
       );
+    case "links":
+      return (
+        <LinksField value={(value as LinkRow[]) ?? []} onChange={(rows) => set(f.name, rows)} />
+      );
     default:
       return (
         <Input
@@ -229,12 +235,62 @@ function renderField(
   }
 }
 
+/** Editable list of { label, url } rows (resources, PDFs, articles). */
+function LinksField({
+  value,
+  onChange,
+}: {
+  value: LinkRow[];
+  onChange: (rows: LinkRow[]) => void;
+}) {
+  const rows = value.length ? value : [];
+
+  function update(i: number, patch: Partial<LinkRow>) {
+    const next = rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r));
+    onChange(next);
+  }
+  function add() {
+    onChange([...rows, { label: "", url: "" }]);
+  }
+  function remove(i: number) {
+    onChange(rows.filter((_, idx) => idx !== i));
+  }
+
+  return (
+    <div className="space-y-2">
+      {rows.map((row, i) => (
+        <div key={i} className="flex gap-2">
+          <Input
+            className="w-2/5"
+            placeholder="Label (e.g. Project brief PDF)"
+            value={row.label}
+            onChange={(e) => update(i, { label: e.target.value })}
+          />
+          <Input
+            className="flex-1"
+            placeholder="https://…"
+            value={row.url}
+            onChange={(e) => update(i, { url: e.target.value })}
+          />
+          <Button type="button" size="sm" variant="ghost" onClick={() => remove(i)} aria-label="Remove link">
+            <X className="size-4" />
+          </Button>
+        </div>
+      ))}
+      <Button type="button" size="sm" variant="outline" onClick={add}>
+        <Plus className="size-4" /> Add link
+      </Button>
+    </div>
+  );
+}
+
 function seed(resource: ResourceUi, initial?: Row): Row {
   if (initial) return { ...initial };
   const base: Row = {};
   for (const f of resource.fields) {
     if (f.type === "boolean") base[f.name] = false;
     else if (f.type === "multiselect") base[f.name] = [];
+    else if (f.type === "links") base[f.name] = [];
   }
   return base;
 }
@@ -251,6 +307,13 @@ function serialize(resource: ResourceUi, values: Row): Row {
       } catch {
         throw new Error(`${f.label} is not valid JSON`);
       }
+    }
+    if (f.type === "links") {
+      // Keep only complete rows, trimmed; always send an array.
+      const rows = Array.isArray(v) ? (v as LinkRow[]) : [];
+      v = rows
+        .map((r) => ({ label: (r.label ?? "").trim(), url: (r.url ?? "").trim() }))
+        .filter((r) => r.url);
     }
     if (v !== undefined) out[f.name] = v;
   }

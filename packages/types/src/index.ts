@@ -70,6 +70,12 @@ export interface Country {
   code: string;
 }
 
+/** A labelled external link (resource, PDF, article, apply page…). */
+export interface LinkItem {
+  label: string;
+  url: string;
+}
+
 export interface Project {
   id: ID;
   slug: string;
@@ -86,6 +92,8 @@ export interface Project {
   body?: string | null;
   coverImageUrl?: string | null;
   gallery?: string[];
+  videoUrl?: string | null;
+  links?: LinkItem[];
   featured: boolean;
 }
 

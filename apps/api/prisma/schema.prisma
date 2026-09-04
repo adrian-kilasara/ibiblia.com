@@ -183,6 +183,10 @@ model Project {
   body          String?
   coverImageUrl String?
   gallery       String[]      @default([])
+  /// Optional explainer video — a YouTube/Vimeo link (embedded) or a direct video URL.
+  videoUrl      String?
+  /// Related resources shown as buttons: [{ "label": "Project brief (PDF)", "url": "https://…" }]
+  links         Json          @default("[]")
   featured      Boolean       @default(false)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
