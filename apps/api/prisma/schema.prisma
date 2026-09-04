@@ -209,6 +209,11 @@ model Publication {
   downloadUrl   String?
   previewUrl    String?
   price         Int? // cents; null = free
+  gallery       String[]            @default([])
+  /// Optional book trailer / explainer — a YouTube/Vimeo link or direct video URL.
+  videoUrl      String?
+  /// Related links shown as buttons: [{ "label": "Sample chapter (PDF)", "url": "https://…" }]
+  links         Json                @default("[]")
   featured      Boolean             @default(false)
   published     Boolean             @default(true)
   createdAt     DateTime            @default(now())
@@ -245,6 +250,11 @@ model NewsPost {
   body          String
   coverImageUrl String?
   category      String?
+  gallery       String[] @default([])
+  /// Optional video for the article — a YouTube/Vimeo link or direct video URL.
+  videoUrl      String?
+  /// Related links shown as buttons: [{ "label": "Read the report", "url": "https://…" }]
+  links         Json     @default("[]")
   published     Boolean  @default(false)
   publishedAt   DateTime @default(now())
   createdAt     DateTime @default(now())

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, FileText } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button, Progress, Section } from "@ibiblia/ui";
 import { site, formatMoney } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
+import { VideoBlock, GalleryBlock, LinksBlock } from "@/components/media-blocks";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -16,33 +17,6 @@ const STATUS_LABEL: Record<string, string> = {
   COMPLETED: "Completed",
   NEEDS_FUNDING: "Needs Funding",
 };
-
-/** Convert a YouTube/Vimeo URL to its embeddable player URL, or null if not recognised. */
-function videoEmbedUrl(url: string): string | null {
-  try {
-    const u = new URL(url);
-    const host = u.hostname.replace(/^www\.|^m\./, "");
-    if (host === "youtu.be") return `https://www.youtube.com/embed/${u.pathname.slice(1)}`;
-    if (host === "youtube.com") {
-      if (u.pathname === "/watch") {
-        const v = u.searchParams.get("v");
-        return v ? `https://www.youtube.com/embed/${v}` : null;
-      }
-      if (u.pathname.startsWith("/embed/")) return url;
-      if (u.pathname.startsWith("/shorts/")) return `https://www.youtube.com/embed/${u.pathname.split("/")[2]}`;
-    }
-    if (host === "vimeo.com") {
-      const id = u.pathname.split("/").filter(Boolean)[0];
-      return id ? `https://player.vimeo.com/video/${id}` : null;
-    }
-    if (host === "player.vimeo.com") return url;
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-const isVideoFile = (url: string): boolean => /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -58,9 +32,6 @@ export default async function ProjectDetailPage({ params }: Props) {
   const raised = p.fundingRaised ?? 0;
   const needed = p.fundingNeeded ?? 0;
   const fundingPct = needed > 0 ? Math.round((raised / needed) * 100) : 0;
-
-  const videoEmbed = p.videoUrl ? videoEmbedUrl(p.videoUrl) : null;
-  const videoFile = p.videoUrl && !videoEmbed && isVideoFile(p.videoUrl) ? p.videoUrl : null;
 
   return (
     <main>
@@ -80,59 +51,10 @@ export default async function ProjectDetailPage({ params }: Props) {
                 "Project photography"
               )}
             </div>
-            {videoEmbed && (
-              <div className="mt-4 aspect-video overflow-hidden rounded-lg bg-black">
-                <iframe
-                  src={videoEmbed}
-                  title={`${p.title} video`}
-                  className="size-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            )}
-            {videoFile && (
-              <video controls className="mt-4 w-full rounded-lg bg-black">
-                <source src={videoFile} />
-              </video>
-            )}
-            {p.gallery && p.gallery.length > 0 && (
-              <div className="mt-4 grid grid-cols-3 gap-3">
-                {p.gallery.map((src) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    key={src}
-                    src={src}
-                    alt={p.title}
-                    className="aspect-square w-full rounded-md object-cover"
-                  />
-                ))}
-              </div>
-            )}
+            <VideoBlock url={p.videoUrl} title={p.title} className="mt-4" />
+            <GalleryBlock images={p.gallery} alt={p.title} className="mt-4" />
             {p.body && <p className="mt-8 whitespace-pre-line text-muted-foreground">{p.body}</p>}
-
-            {p.links && p.links.length > 0 && (
-              <div className="mt-10">
-                <h2 className="font-heading text-xl font-semibold">Resources &amp; links</h2>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  {p.links.map((l) => {
-                    const isPdf = /\.pdf(\?.*)?$/i.test(l.url);
-                    const Icon = isPdf ? FileText : ExternalLink;
-                    return (
-                      <a
-                        key={l.url}
-                        href={l.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-surface"
-                      >
-                        <Icon className="size-4 text-gold" /> {l.label || l.url}
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            <LinksBlock links={p.links} className="mt-10" />
           </div>
 
           <aside className="lg:col-span-1">

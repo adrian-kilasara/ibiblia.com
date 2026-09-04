@@ -110,6 +110,9 @@ export interface Publication {
   downloadUrl?: string | null;
   previewUrl?: string | null;
   price?: number | null;
+  gallery?: string[];
+  videoUrl?: string | null;
+  links?: LinkItem[];
 }
 
 export interface Testimony {
@@ -129,6 +132,9 @@ export interface NewsPost {
   body: string;
   coverImageUrl?: string | null;
   category?: string | null;
+  gallery?: string[];
+  videoUrl?: string | null;
+  links?: LinkItem[];
   publishedAt: string;
 }
 
