@@ -32,6 +32,11 @@ export class StorageService implements OnModuleInit {
     });
   }
 
+  /** True when external S3/R2 object storage is configured; otherwise uploads fall back to the DB. */
+  isConfigured(): boolean {
+    return Boolean(process.env.S3_ENDPOINT);
+  }
+
   async onModuleInit(): Promise<void> {
     // In production without storage configured, skip bucket setup so the API boots instantly.
     if (!process.env.S3_ENDPOINT) {

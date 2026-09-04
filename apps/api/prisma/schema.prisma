@@ -318,6 +318,9 @@ model MediaAsset {
   mimeType  String
   size      Int
   alt       String?
+  /// Raw image bytes, used when no external object storage (S3/R2) is configured.
+  /// Served publicly via GET /api/uploads/:id. Null when the asset lives in S3/R2.
+  data      Bytes?
   createdAt DateTime @default(now())
 }
 
