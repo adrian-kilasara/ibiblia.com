@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Upload, Loader2 } from "lucide-react";
 import { Button } from "@ibiblia/ui";
 import { api } from "@/lib/api";
 import { findResource, type FieldConfig, type ResourceUi } from "@/lib/resources";
@@ -224,6 +224,14 @@ function renderField(
       return (
         <LinksField value={(value as LinkRow[]) ?? []} onChange={(rows) => set(f.name, rows)} />
       );
+    case "file":
+      return (
+        <FileField
+          value={(value as string) ?? ""}
+          accept={f.accept}
+          onChange={(url) => set(f.name, url)}
+        />
+      );
     default:
       return (
         <Input
@@ -235,6 +243,67 @@ function renderField(
   }
 }
 
+/** A URL field with an "upload from computer" button (video, PDF, …). */
+function FileField({
+  value,
+  accept,
+  onChange,
+}: {
+  value: string;
+  accept?: string;
+  onChange: (url: string) => void;
+}) {
+  const [uploading, setUploading] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError("");
+    try {
+      const asset = await api.uploadFile(file);
+      onChange(asset.url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }
+
+  return (
+    <div>
+      <input ref={inputRef} type="file" accept={accept} hidden onChange={onFile} />
+      <div className="flex gap-2">
+        <Input
+          className="flex-1"
+          placeholder="https://…  (or upload a file)"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={uploading}
+          onClick={() => inputRef.current?.click()}
+        >
+          {uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+          {uploading ? "Uploading…" : "Upload"}
+        </Button>
+        {value && (
+          <Button type="button" size="sm" variant="ghost" onClick={() => onChange("")} aria-label="Clear">
+            <X className="size-4" />
+          </Button>
+        )}
+      </div>
+      {error && <p className="mt-1 text-sm text-destructive">{error}</p>}
+    </div>
+  );
+}
+
 /** Editable list of { label, url } rows (resources, PDFs, articles). */
 function LinksField({
   value,
@@ -244,6 +313,8 @@ function LinksField({
   onChange: (rows: LinkRow[]) => void;
 }) {
   const rows = value.length ? value : [];
+  const [uploading, setUploading] = React.useState<number | null>(null);
+  const fileRefs = React.useRef<Array<HTMLInputElement | null>>([]);
 
   function update(i: number, patch: Partial<LinkRow>) {
     const next = rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r));
@@ -255,11 +326,35 @@ function LinksField({
   function remove(i: number) {
     onChange(rows.filter((_, idx) => idx !== i));
   }
+  async function onFile(i: number, e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(i);
+    try {
+      const asset = await api.uploadFile(file);
+      const niceName = file.name.replace(/\.[^.]+$/, "");
+      update(i, { url: asset.url, label: rows[i]?.label?.trim() ? rows[i].label : niceName });
+    } catch {
+      /* leave the row as-is on failure */
+    } finally {
+      setUploading(null);
+      if (fileRefs.current[i]) fileRefs.current[i]!.value = "";
+    }
+  }
 
   return (
     <div className="space-y-2">
       {rows.map((row, i) => (
         <div key={i} className="flex gap-2">
+          <input
+            ref={(el) => {
+              fileRefs.current[i] = el;
+            }}
+            type="file"
+            accept="application/pdf,.pdf,image/*,video/*"
+            hidden
+            onChange={(e) => onFile(i, e)}
+          />
           <Input
             className="w-2/5"
             placeholder="Label (e.g. Project brief PDF)"
@@ -268,10 +363,20 @@ function LinksField({
           />
           <Input
             className="flex-1"
-            placeholder="https://…"
+            placeholder="https://…  (or upload)"
             value={row.url}
             onChange={(e) => update(i, { url: e.target.value })}
           />
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={uploading === i}
+            onClick={() => fileRefs.current[i]?.click()}
+            aria-label="Upload file for this link"
+          >
+            {uploading === i ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+          </Button>
           <Button type="button" size="sm" variant="ghost" onClick={() => remove(i)} aria-label="Remove link">
             <X className="size-4" />
           </Button>
@@ -280,6 +385,7 @@ function LinksField({
       <Button type="button" size="sm" variant="outline" onClick={add}>
         <Plus className="size-4" /> Add link
       </Button>
+      <p className="text-xs text-muted-foreground">Paste a link, or upload a PDF/file from your computer.</p>
     </div>
   );
 }

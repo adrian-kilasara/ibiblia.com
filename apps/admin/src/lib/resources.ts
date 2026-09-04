@@ -16,6 +16,7 @@ export type FieldType =
   | "date"
   | "json"
   | "links" // list of { label, url } rows (PDFs, articles, resources)
+  | "file" // URL field with an "upload from computer" button (PDF, video, etc.)
   | "image" // single image: upload / pick from gallery
   | "image-multi"; // multiple images
 
@@ -26,6 +27,8 @@ export interface FieldConfig {
   options?: string[];
   /** For type "relation": the resource slug to pick from. */
   relation?: string;
+  /** For type "file": the file input's accept attribute, e.g. "video/*". */
+  accept?: string;
   required?: boolean;
   help?: string;
   hideInTable?: boolean;
@@ -119,9 +122,10 @@ export const RESOURCES: ResourceUi[] = [
       {
         name: "videoUrl",
         label: "Project Video",
-        type: "text",
+        type: "file",
+        accept: "video/*",
         hideInTable: true,
-        help: "Paste a YouTube or Vimeo link — it embeds as a player on the page.",
+        help: "Upload a video from your computer, or paste a YouTube/Vimeo link.",
       },
       {
         name: "links",
@@ -157,12 +161,27 @@ export const RESOURCES: ResourceUi[] = [
       {
         name: "videoUrl",
         label: "Video",
-        type: "text",
+        type: "file",
+        accept: "video/*",
         hideInTable: true,
-        help: "Optional book trailer — a YouTube or Vimeo link.",
+        help: "Upload a book trailer, or paste a YouTube/Vimeo link.",
       },
-      { name: "downloadUrl", label: "Download URL", type: "text", hideInTable: true },
-      { name: "previewUrl", label: "Preview URL", type: "text", hideInTable: true },
+      {
+        name: "downloadUrl",
+        label: "Download File / URL",
+        type: "file",
+        accept: "application/pdf,.pdf",
+        hideInTable: true,
+        help: "Upload a PDF from your computer, or paste a link.",
+      },
+      {
+        name: "previewUrl",
+        label: "Preview File / URL",
+        type: "file",
+        accept: "application/pdf,.pdf",
+        hideInTable: true,
+        help: "Upload a sample PDF, or paste a link.",
+      },
       {
         name: "links",
         label: "Links & Resources",
@@ -197,9 +216,10 @@ export const RESOURCES: ResourceUi[] = [
       {
         name: "videoUrl",
         label: "Video",
-        type: "text",
+        type: "file",
+        accept: "video/*",
         hideInTable: true,
-        help: "Optional — a YouTube or Vimeo link.",
+        help: "Upload a video, or paste a YouTube/Vimeo link.",
       },
       {
         name: "links",

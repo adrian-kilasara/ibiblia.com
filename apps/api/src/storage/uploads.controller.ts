@@ -20,8 +20,9 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { PrismaService } from "../prisma/prisma.service";
 import { StorageService } from "./storage.service";
 
-const MAX_BYTES = 10 * 1024 * 1024; // 10MB
-const ALLOWED = /^image\/(png|jpe?g|webp|gif|svg\+xml)$/;
+const MAX_BYTES = 64 * 1024 * 1024; // 64MB — covers images, PDFs, and short videos.
+// Images, PDFs, and common web video types. Large/long videos should use a YouTube/Vimeo link.
+const ALLOWED = /^(image\/(png|jpe?g|webp|gif|svg\+xml)|application\/pdf|video\/(mp4|webm|ogg|quicktime))$/;
 
 // Never ship the raw `data` buffer back in JSON responses — only metadata.
 const ASSET_SELECT = {
@@ -68,7 +69,7 @@ export class UploadsController {
   async upload(@Req() req: Request, @UploadedFile() file?: Express.Multer.File) {
     if (!file) throw new BadRequestException("No file provided");
     if (!ALLOWED.test(file.mimetype)) {
-      throw new BadRequestException("Only image files are allowed");
+      throw new BadRequestException("Only images, PDFs, and videos are allowed");
     }
 
     // Preferred path: external S3/R2 object storage, when configured.
@@ -102,31 +103,58 @@ export class UploadsController {
     });
   }
 
-  /** Remove an image from the gallery. */
+  /** Remove a file from the gallery. */
   @Delete(":id")
   async remove(@Param("id") id: string) {
     const asset = await this.prisma.mediaAsset.findUnique({ where: { id }, select: { id: true } });
-    if (!asset) throw new NotFoundException("Image not found");
+    if (!asset) throw new NotFoundException("File not found");
     await this.prisma.mediaAsset.delete({ where: { id } });
     return { deleted: true };
   }
 }
 
-/** Publicly serves DB-stored image bytes so <img src> works without external object storage. */
+/** Publicly serves DB-stored file bytes so <img>/<video>/PDF links work without external storage. */
 @ApiTags("uploads")
 @Controller("uploads")
 export class PublicUploadsController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get(":id")
-  async serve(@Param("id") id: string, @Res() res: Response): Promise<void> {
+  async serve(@Param("id") id: string, @Req() req: Request, @Res() res: Response): Promise<void> {
     const asset = await this.prisma.mediaAsset.findUnique({
       where: { id },
       select: { mimeType: true, data: true },
     });
-    if (!asset || !asset.data) throw new NotFoundException("Image not found");
+    if (!asset || !asset.data) throw new NotFoundException("File not found");
+
+    const buf = Buffer.from(asset.data);
     res.setHeader("Content-Type", asset.mimeType);
     res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-    res.end(Buffer.from(asset.data));
+    res.setHeader("Accept-Ranges", "bytes");
+    // PDFs and images display inline in the browser rather than downloading.
+    res.setHeader("Content-Disposition", "inline");
+
+    // Honour HTTP Range requests so <video> can stream and seek.
+    const range = req.headers.range;
+    const match = range ? /bytes=(\d*)-(\d*)/.exec(range) : null;
+    if (match) {
+      let start = match[1] ? parseInt(match[1], 10) : 0;
+      let end = match[2] ? parseInt(match[2], 10) : buf.length - 1;
+      if (Number.isNaN(start)) start = 0;
+      if (Number.isNaN(end) || end >= buf.length) end = buf.length - 1;
+      if (start > end || start >= buf.length) {
+        res.status(416).setHeader("Content-Range", `bytes */${buf.length}`);
+        res.end();
+        return;
+      }
+      res.status(206);
+      res.setHeader("Content-Range", `bytes ${start}-${end}/${buf.length}`);
+      res.setHeader("Content-Length", String(end - start + 1));
+      res.end(buf.subarray(start, end + 1));
+      return;
+    }
+
+    res.setHeader("Content-Length", String(buf.length));
+    res.end(buf);
   }
 }

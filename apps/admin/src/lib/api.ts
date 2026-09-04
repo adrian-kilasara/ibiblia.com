@@ -110,8 +110,8 @@ export const api = {
   deleteUpload: (id: string) =>
     request<{ deleted: boolean }>(`/admin/uploads/${id}`, { method: "DELETE" }),
 
-  /** Upload a local image file; returns the stored asset (with a public URL). */
-  uploadImage: async (file: File): Promise<MediaAsset> => {
+  /** Upload a local file (image, PDF, or video); returns the stored asset (with a public URL). */
+  uploadFile: async (file: File): Promise<MediaAsset> => {
     const token = getToken();
     const form = new FormData();
     form.append("file", file);
@@ -131,6 +131,11 @@ export const api = {
       throw new ApiError(res.status, message);
     }
     return (await res.json()) as MediaAsset;
+  },
+
+  /** Backwards-compatible alias — uploads any file. */
+  uploadImage(file: File): Promise<MediaAsset> {
+    return this.uploadFile(file);
   },
 };
 

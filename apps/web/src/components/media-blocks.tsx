@@ -19,7 +19,9 @@ export function VideoBlock({ url, title, className }: { url?: string | null; tit
       </div>
     );
   }
-  if (isVideoFile(url)) {
+  // A direct video file, or an uploaded file served from our API (extensionless URL; the
+  // server sends the right Content-Type so the browser can play it).
+  if (isVideoFile(url) || url.includes("/api/uploads/")) {
     return (
       <video controls className={`w-full rounded-lg bg-black ${className ?? ""}`}>
         <source src={url} />
