@@ -4,8 +4,24 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { RESOURCES, ResourceConfig } from "./resource-registry";
+
+/**
+ * Per-model set of non-nullable scalar/enum fields (keyed by lowercased model name).
+ * The admin form sends `null` for untouched fields; for a NOT-NULL column that would make
+ * Prisma throw (a 500). Dropping the key instead lets the column's default apply on create
+ * and the existing value stay put on update, while nullable fields can still be cleared.
+ */
+const REQUIRED_FIELDS: Record<string, Set<string>> = {};
+for (const model of Prisma.dmmf.datamodel.models) {
+  const set = new Set<string>();
+  for (const f of model.fields) {
+    if (f.isRequired && !f.isList && f.kind !== "object") set.add(f.name);
+  }
+  REQUIRED_FIELDS[model.name.toLowerCase()] = set;
+}
 
 // Prisma model delegates share this shape; we access them dynamically by name.
 interface Delegate {
@@ -56,7 +72,7 @@ export class AdminService {
   create(resource: string, data: Record<string, unknown>) {
     const cfg = this.config(resource);
     if (cfg.readOnly) throw new ForbiddenException(`${resource} is read-only`);
-    return this.model(cfg).create({ data: this.clean(data), include: cfg.include });
+    return this.model(cfg).create({ data: this.clean(cfg, data), include: cfg.include });
   }
 
   async update(resource: string, id: string, data: Record<string, unknown>) {
@@ -65,7 +81,7 @@ export class AdminService {
     await this.get(resource, id);
     return this.model(cfg).update({
       where: { id },
-      data: this.clean(data),
+      data: this.clean(cfg, data),
       include: cfg.include,
     });
   }
@@ -78,8 +94,12 @@ export class AdminService {
     return { deleted: true };
   }
 
-  /** Strip fields the client must never set directly. */
-  private clean(data: Record<string, unknown>): Record<string, unknown> {
+  /**
+   * Strip fields the client must never set directly, and drop `null`/`undefined` for
+   * non-nullable columns so their defaults (create) or existing values (update) apply
+   * instead of Prisma throwing on a NOT-NULL violation.
+   */
+  private clean(cfg: ResourceConfig, data: Record<string, unknown>): Record<string, unknown> {
     if (typeof data !== "object" || data === null) {
       throw new BadRequestException("Body must be an object");
     }
@@ -87,6 +107,13 @@ export class AdminService {
     void id;
     void createdAt;
     void updatedAt;
-    return rest;
+
+    const required = REQUIRED_FIELDS[cfg.delegate.toLowerCase()] ?? new Set<string>();
+    const out: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(rest)) {
+      if ((value === null || value === undefined) && required.has(key)) continue;
+      out[key] = value;
+    }
+    return out;
   }
 }
