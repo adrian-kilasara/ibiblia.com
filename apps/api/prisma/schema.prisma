@@ -162,6 +162,8 @@ model MissionArea {
   images  String[]       @default([])
   /// External links for more info / application / sites: [{ "label": "...", "url": "..." }]
   links   Json           @default("[]")
+  /// Rich content: ordered blocks (text/image/video/links) with media inline.
+  content Json           @default("[]")
   order   Int            @default(0)
 }
 

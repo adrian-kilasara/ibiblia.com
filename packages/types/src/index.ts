@@ -163,6 +163,7 @@ export interface MissionArea {
   impact?: string | null;
   images?: string[];
   links?: MissionAreaLink[];
+  content?: ContentBlock[];
 }
 
 export interface Donation {

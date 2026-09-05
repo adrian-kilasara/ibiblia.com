@@ -75,8 +75,15 @@ export const RESOURCES: ResourceUi[] = [
       { name: "slug", label: "Slug", type: "text", required: true },
       { name: "title", label: "Title", type: "text", required: true },
       { name: "summary", label: "Summary", type: "textarea", required: true },
-      { name: "process", label: "Process", type: "textarea" },
-      { name: "impact", label: "Impact", type: "textarea" },
+      {
+        name: "content",
+        label: "Story Builder",
+        type: "blocks",
+        hideInTable: true,
+        help: "Compose the page with paragraphs, photos, videos, and links in any order. When used, it replaces the Process/Impact/Images/Links sections below.",
+      },
+      { name: "process", label: "Process (plain — optional)", type: "textarea" },
+      { name: "impact", label: "Impact (plain — optional)", type: "textarea" },
       { name: "images", label: "Images", type: "image-multi", hideInTable: true },
       {
         name: "links",

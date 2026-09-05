@@ -5,6 +5,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Section } from "@ibiblia/ui";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
+import { ContentBlocks } from "@/components/media-blocks";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -28,6 +29,10 @@ export default async function MissionAreaPage({ params }: Props) {
         <Link href="/mission" className="mb-8 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" /> All mission areas
         </Link>
+        {area.content && area.content.length > 0 ? (
+          <ContentBlocks blocks={area.content} title={area.title} />
+        ) : (
+          <>
         {area.images && area.images.length > 0 && (
           <div className="mb-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {area.images.map((src) => (
@@ -73,6 +78,8 @@ export default async function MissionAreaPage({ params }: Props) {
               ))}
             </div>
           </div>
+        )}
+          </>
         )}
       </Section>
     </main>
