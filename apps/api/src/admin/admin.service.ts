@@ -2,10 +2,12 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { MailService } from "../mail/mail.service";
 import { RESOURCES, ResourceConfig } from "./resource-registry";
 
 /**
@@ -35,7 +37,12 @@ interface Delegate {
 
 @Injectable()
 export class AdminService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(AdminService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mail: MailService
+  ) {}
 
   private config(resource: string): ResourceConfig {
     const cfg = RESOURCES[resource];
@@ -69,21 +76,48 @@ export class AdminService {
     return row;
   }
 
-  create(resource: string, data: Record<string, unknown>) {
+  async create(resource: string, data: Record<string, unknown>) {
     const cfg = this.config(resource);
     if (cfg.readOnly) throw new ForbiddenException(`${resource} is read-only`);
-    return this.model(cfg).create({ data: this.clean(cfg, data), include: cfg.include });
+    const payload = this.clean(cfg, data);
+    if (cfg.delegate === "question" && payload.answer) payload.answeredAt = new Date();
+    const row = (await this.model(cfg).create({ data: payload, include: cfg.include })) as Record<string, unknown>;
+    await this.afterWrite(cfg, row, null);
+    return row;
   }
 
   async update(resource: string, id: string, data: Record<string, unknown>) {
     const cfg = this.config(resource);
     if (cfg.readOnly) throw new ForbiddenException(`${resource} is read-only`);
-    await this.get(resource, id);
-    return this.model(cfg).update({
+    const before = (await this.get(resource, id)) as Record<string, unknown>;
+    const payload = this.clean(cfg, data);
+    if (cfg.delegate === "question" && payload.answer && !before.answeredAt) payload.answeredAt = new Date();
+    const row = (await this.model(cfg).update({
       where: { id },
-      data: this.clean(cfg, data),
+      data: payload,
       include: cfg.include,
-    });
+    })) as Record<string, unknown>;
+    await this.afterWrite(cfg, row, before);
+    return row;
+  }
+
+  /** Fire email side-effects after a write (answer to asker; news to subscribers). Never throws. */
+  private async afterWrite(
+    cfg: ResourceConfig,
+    row: Record<string, unknown>,
+    before: Record<string, unknown> | null
+  ): Promise<void> {
+    try {
+      if (cfg.delegate === "question" && row.answer && !(before && before.answer)) {
+        await this.mail.sendAnswer(row as { name?: string | null; email: string; message: string; answer?: string | null });
+      }
+      if (cfg.delegate === "newsPost" && row.published && !row.notifiedAt) {
+        await this.mail.notifyNews(row as { id: string; slug: string; title: string; excerpt?: string | null });
+        await this.prisma.newsPost.update({ where: { id: row.id as string }, data: { notifiedAt: new Date() } });
+      }
+    } catch (err) {
+      this.logger.warn(`afterWrite side-effect failed: ${(err as Error).message}`);
+    }
   }
 
   async remove(resource: string, id: string) {

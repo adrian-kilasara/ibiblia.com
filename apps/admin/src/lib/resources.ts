@@ -488,6 +488,36 @@ export const RESOURCES: ResourceUi[] = [
     ],
   },
   {
+    slug: "subscribers",
+    label: "Subscribers",
+    group: "Inbox",
+    titleField: "email",
+    fields: [
+      { name: "email", label: "Email", type: "text", required: true },
+      { name: "name", label: "Name", type: "text" },
+      { name: "createdAt", label: "Subscribed", type: "date", hideInTable: false },
+    ],
+  },
+  {
+    slug: "questions",
+    label: "Questions & Comments",
+    group: "Inbox",
+    titleField: "email",
+    fields: [
+      { name: "name", label: "Name", type: "text" },
+      { name: "email", label: "Email", type: "text", required: true },
+      { name: "message", label: "Question / Comment", type: "textarea", required: true },
+      {
+        name: "answer",
+        label: "Your Answer",
+        type: "textarea",
+        hideInTable: true,
+        help: "Saving an answer emails it to the asker — but only if they subscribed. Non-subscribers reach you via the contact channels.",
+      },
+      { name: "answeredAt", label: "Answered", type: "date", hideInTable: true },
+    ],
+  },
+  {
     slug: "donations",
     label: "Donations",
     group: "Inbox",

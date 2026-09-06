@@ -3,7 +3,7 @@ import { Clock, Mail, MapPin, Phone, ExternalLink } from "lucide-react";
 import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
-import { InquiryForm } from "@/components/inquiry-form";
+import { QuestionForm } from "@/components/question-form";
 import { SocialLinks } from "@/components/social-links";
 
 export const metadata: Metadata = {
@@ -38,9 +38,13 @@ export default async function ContactPage() {
       <SectionBg bgKey="contact:body">
         <div className="grid gap-12 lg:grid-cols-[1fr_360px]">
           <div>
-            <h2 className="font-heading text-2xl font-semibold">Send a message</h2>
+            <h2 className="font-heading text-2xl font-semibold">Ask a question or leave a comment</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Subscribe and we&apos;ll email you the answer; you can also reach us directly using the
+              contact options.
+            </p>
             <div className="mt-6">
-              <InquiryForm type="CONTACT" withSubject submitLabel="Send message" />
+              <QuestionForm />
             </div>
           </div>
 

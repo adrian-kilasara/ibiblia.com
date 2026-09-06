@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Button } from "@ibiblia/ui";
-import { postSubmission } from "@/lib/forms";
+import { subscribe } from "@/lib/forms";
 
 export function NewsletterForm() {
   const [email, setEmail] = React.useState("");
@@ -14,7 +14,7 @@ export function NewsletterForm() {
     setStatus("loading");
     setError("");
     try {
-      await postSubmission({ type: "NEWSLETTER", email });
+      await subscribe({ email });
       setStatus("done");
       setEmail("");
     } catch (err) {

@@ -268,10 +268,34 @@ model NewsPost {
   content       Json     @default("[]")
   published     Boolean  @default(false)
   publishedAt   DateTime @default(now())
+  /// Set once subscribers have been emailed about this post, so they aren't emailed twice.
+  notifiedAt    DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@index([published, publishedAt])
+}
+
+/// A person subscribed to news updates (and eligible to be answered by email).
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+/// A visitor's question / comment. The admin writes `answer`; if the asker is a Subscriber
+/// they are emailed the answer, otherwise they reach out via the public contact channels.
+model Question {
+  id         String    @id @default(cuid())
+  name       String?
+  email      String
+  message    String
+  answer     String?
+  answeredAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([createdAt])
 }
 
 model Event {

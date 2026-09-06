@@ -11,12 +11,15 @@ import { AdminModule } from "./admin/admin.module";
 import { SubmissionsModule } from "./submissions/submissions.module";
 import { DonationsModule } from "./donations/donations.module";
 import { StorageModule } from "./storage/storage.module";
+import { MailModule } from "./mail/mail.module";
+import { EngageModule } from "./engage/engage.module";
 import { SeedService } from "./seed/seed.service";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
+    MailModule,
     StorageModule,
     AuthModule,
     AdminModule,
@@ -26,6 +29,7 @@ import { SeedService } from "./seed/seed.service";
     NewsModule,
     SubmissionsModule,
     DonationsModule,
+    EngageModule,
   ],
   controllers: [HealthController],
   providers: [SeedService],
