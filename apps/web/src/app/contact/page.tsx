@@ -4,6 +4,7 @@ import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 import { InquiryForm } from "@/components/inquiry-form";
+import { SocialLinks } from "@/components/social-links";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -75,6 +76,7 @@ export default async function ContactPage() {
                   </li>
                 )}
               </ul>
+              <SocialLinks info={info} className="mt-5" />
             </div>
 
             {/* Embedded live map */}

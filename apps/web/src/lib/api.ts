@@ -105,6 +105,11 @@ export const site = {
       hours?: string | null;
       mapQuery?: string | null;
       mapEmbedUrl?: string | null;
+      whatsapp?: string | null;
+      x?: string | null;
+      instagram?: string | null;
+      facebook?: string | null;
+      threads?: string | null;
     } | null>("/contact-info", null),
 };
 

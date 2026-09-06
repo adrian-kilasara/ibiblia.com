@@ -425,6 +425,11 @@ export const RESOURCES: ResourceUi[] = [
         hideInTable: true,
         help: 'Optional. In Google Maps → Share → "Embed a map", copy the src="…" URL and paste it here for an exact pin. Overrides Map Location.',
       },
+      { name: "whatsapp", label: "WhatsApp number", type: "text", hideInTable: true, help: "Digits incl. country code, e.g. 254700111222" },
+      { name: "x", label: "X (Twitter) link", type: "text", hideInTable: true, help: "Profile URL or @handle" },
+      { name: "instagram", label: "Instagram link", type: "text", hideInTable: true, help: "Profile URL or @handle" },
+      { name: "facebook", label: "Facebook link", type: "text", hideInTable: true, help: "Page URL" },
+      { name: "threads", label: "Threads link", type: "text", hideInTable: true, help: "Profile URL or @handle" },
     ],
   },
   {

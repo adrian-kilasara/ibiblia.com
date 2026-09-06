@@ -332,6 +332,12 @@ model ContactInfo {
   mapQuery    String?
   /// Optional full Google Maps embed URL (Share → Embed a map) — overrides mapQuery.
   mapEmbedUrl String?
+  /// Social / messaging links — each shows a themed icon on the site when filled.
+  whatsapp    String? // phone number (digits) for a wa.me link
+  x           String? // profile URL or handle
+  instagram   String? // profile URL or handle
+  facebook    String? // page URL
+  threads     String? // profile URL or handle
   updatedAt   DateTime @updatedAt
 }
 
