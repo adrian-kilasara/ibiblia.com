@@ -16,6 +16,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import type { Express, Request, Response } from "express";
 import { randomUUID } from "node:crypto";
+import heicConvert = require("heic-convert");
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { PrismaService } from "../prisma/prisma.service";
 import { StorageService } from "./storage.service";
@@ -23,6 +24,17 @@ import { StorageService } from "./storage.service";
 const MAX_BYTES = 64 * 1024 * 1024; // 64MB — covers images, PDFs, and short videos.
 // Images, PDFs, and common web video types. Large/long videos should use a YouTube/Vimeo link.
 const ALLOWED = /^(image\/(png|jpe?g|webp|gif|svg\+xml)|application\/pdf|video\/(mp4|webm|ogg|quicktime))$/;
+
+// iPhone photos are HEIC/HEIF, which desktop browsers can't display — detect and convert to JPEG.
+const HEIC_BRANDS = ["heic", "heix", "hevc", "hevx", "mif1", "msf1", "heim", "heis", "hevm", "hevs"];
+function isHeic(buffer: Buffer, mimetype: string, name: string): boolean {
+  if (/hei[cf]/i.test(mimetype)) return true;
+  if (/\.hei[cf]$/i.test(name)) return true;
+  if (buffer.length > 12 && buffer.toString("ascii", 4, 8) === "ftyp") {
+    return HEIC_BRANDS.includes(buffer.toString("ascii", 8, 12).toLowerCase());
+  }
+  return false;
+}
 
 // Never ship the raw `data` buffer back in JSON responses — only metadata.
 const ASSET_SELECT = {
@@ -68,15 +80,35 @@ export class UploadsController {
   @UseInterceptors(FileInterceptor("file", { limits: { fileSize: MAX_BYTES } }))
   async upload(@Req() req: Request, @UploadedFile() file?: Express.Multer.File) {
     if (!file) throw new BadRequestException("No file provided");
-    if (!ALLOWED.test(file.mimetype)) {
+
+    // Normalise the upload; convert HEIC/HEIF (iPhone) photos to JPEG so browsers can show them.
+    let buffer = file.buffer;
+    let mimetype = file.mimetype;
+    let filename = file.originalname;
+    if (isHeic(buffer, mimetype, filename)) {
+      try {
+        buffer = Buffer.from(await heicConvert({ buffer, format: "JPEG", quality: 0.9 }));
+        mimetype = "image/jpeg";
+        filename = filename.replace(/\.[^.]+$/, "") + ".jpg";
+      } catch {
+        throw new BadRequestException("Could not process this HEIC photo. Please try a JPG or PNG.");
+      }
+    }
+
+    if (!ALLOWED.test(mimetype)) {
       throw new BadRequestException("Only images, PDFs, and videos are allowed");
     }
 
     // Preferred path: external S3/R2 object storage, when configured.
     if (this.storage.isConfigured()) {
-      const { key, url } = await this.storage.upload(file);
+      const { key, url } = await this.storage.upload({
+        originalname: filename,
+        mimetype,
+        buffer,
+        size: buffer.length,
+      });
       return this.prisma.mediaAsset.create({
-        data: { key, url, mimeType: file.mimetype, size: file.size, alt: file.originalname },
+        data: { key, url, mimeType: mimetype, size: buffer.length, alt: filename },
         select: ASSET_SELECT,
       });
     }
@@ -88,10 +120,10 @@ export class UploadsController {
       data: {
         key,
         url: "", // filled in below once we know the id
-        mimeType: file.mimetype,
-        size: file.size,
-        alt: file.originalname,
-        data: file.buffer,
+        mimeType: mimetype,
+        size: buffer.length,
+        alt: filename,
+        data: buffer,
       },
       select: { id: true },
     });
