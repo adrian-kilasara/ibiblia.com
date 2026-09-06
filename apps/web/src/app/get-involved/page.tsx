@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { SectionBg } from "@/components/section-bg";
 import { PageHeader } from "@/components/page-header";
-import { GetInvolvedTabs } from "@/components/get-involved-tabs";
+import { SubscribeSection } from "@/components/subscribe-section";
 
 export const metadata: Metadata = {
   title: "Get Involved",
-  description: "Volunteer, partner, or pray — become part of the mission to reach every language.",
+  description: "Subscribe to iBiblia — get news updates and stay connected to the mission.",
 };
 
 export default function GetInvolvedPage() {
@@ -13,12 +13,12 @@ export default function GetInvolvedPage() {
     <main>
       <PageHeader
         bgKey="getinvolved:header"
-        eyebrow="Become Part of the Mission"
-        title="There's a place for you"
-        description="Whether you translate, edit, design, give, or pray — your part moves Scripture toward the nations."
+        eyebrow="Get Involved"
+        title="Become part of the mission"
+        description="Add your name and email to subscribe — receive news from the field and stay connected as Scripture reaches every language."
       />
       <SectionBg bgKey="getinvolved:body">
-        <GetInvolvedTabs />
+        <SubscribeSection />
       </SectionBg>
     </main>
   );

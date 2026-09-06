@@ -492,10 +492,11 @@ export const RESOURCES: ResourceUi[] = [
     label: "Subscribers",
     group: "Inbox",
     titleField: "email",
+    readOnly: true, // people subscribe themselves; the admin only observes the list + count
     fields: [
-      { name: "email", label: "Email", type: "text", required: true },
+      { name: "email", label: "Email", type: "text" },
       { name: "name", label: "Name", type: "text" },
-      { name: "createdAt", label: "Subscribed", type: "date", hideInTable: false },
+      { name: "createdAt", label: "Subscribed", type: "date" },
     ],
   },
   {

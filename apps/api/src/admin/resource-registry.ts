@@ -37,7 +37,7 @@ export const RESOURCES: Record<string, ResourceConfig> = {
   "giving-options": { delegate: "givingOption", orderBy: { order: "asc" } },
   donations: { delegate: "donation", orderBy: { createdAt: "desc" }, readOnly: true },
   submissions: { delegate: "submission", orderBy: { createdAt: "desc" } },
-  subscribers: { delegate: "subscriber", orderBy: { createdAt: "desc" } },
+  subscribers: { delegate: "subscriber", orderBy: { createdAt: "desc" }, readOnly: true },
   questions: { delegate: "question", orderBy: { createdAt: "desc" } },
 };
 
