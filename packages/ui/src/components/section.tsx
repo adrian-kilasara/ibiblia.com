@@ -33,7 +33,7 @@ const Section = React.forwardRef<HTMLElement, SectionProps>(
       {image && (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-cover bg-center mix-blend-overlay"
+          className="pointer-events-none absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: `url("${image}")`,
             WebkitMaskImage: OVERLAY_MASK,

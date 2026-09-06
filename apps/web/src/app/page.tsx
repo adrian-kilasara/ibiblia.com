@@ -86,7 +86,7 @@ export default async function HomePage() {
         {bgFor("hero") && (
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 bg-cover bg-center mix-blend-overlay"
+            className="pointer-events-none absolute inset-0 bg-cover bg-center"
             style={{
               backgroundImage: `url("${bgFor("hero")}")`,
               WebkitMaskImage: HERO_MASK,
