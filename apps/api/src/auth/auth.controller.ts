@@ -9,6 +9,11 @@ class LoginDto {
   @IsString() @MinLength(6) password!: string;
 }
 
+class ChangePasswordDto {
+  @IsString() @MinLength(6) currentPassword!: string;
+  @IsString() @MinLength(8) newPassword!: string;
+}
+
 @ApiTags("auth")
 @Controller("auth")
 export class AuthController {
@@ -24,5 +29,12 @@ export class AuthController {
   @Get("me")
   me(@Request() req: { user: unknown }) {
     return req.user;
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post("password")
+  changePassword(@Request() req: { user: { id: string } }, @Body() dto: ChangePasswordDto) {
+    return this.auth.changePassword(req.user.id, dto.currentPassword, dto.newPassword);
   }
 }

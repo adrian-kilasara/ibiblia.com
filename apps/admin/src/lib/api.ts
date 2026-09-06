@@ -92,6 +92,11 @@ export const api = {
       body: JSON.stringify({ email, password }),
     }),
   me: () => request<AdminUser>("/auth/me"),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    request<{ ok: true }>("/auth/password", {
+      method: "POST",
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }),
   counts: () => request<Record<string, number>>("/admin/counts"),
   list: <T = Record<string, unknown>>(resource: string) => request<T[]>(`/admin/${resource}`),
   get: <T = Record<string, unknown>>(resource: string, id: string) =>

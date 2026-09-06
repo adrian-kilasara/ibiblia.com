@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, KeyRound } from "lucide-react";
 import { cn } from "@ibiblia/ui";
 import { useAuth } from "@/lib/auth";
 import { RESOURCES, RESOURCE_GROUPS } from "@/lib/resources";
@@ -69,6 +69,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <div className="border-t border-border px-3 py-3">
           <p className="px-3 text-xs text-muted-foreground">{user.email}</p>
+          <Link
+            href="/account"
+            className={cn(
+              "mt-1 flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors",
+              pathname === "/account" ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-surface"
+            )}
+          >
+            <KeyRound className="size-4" /> Change password
+          </Link>
           <button
             onClick={logout}
             className="mt-1 flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-sm text-foreground hover:bg-surface"
