@@ -90,7 +90,13 @@ export default function ResourceListPage() {
               </tr>
             ) : (
               rows.map((row) => (
-                <tr key={String(row.id)} className="border-b border-border last:border-0 hover:bg-surface">
+                <tr
+                  key={String(row.id)}
+                  onClick={() => !resource.readOnly && router.push(`/${resource.slug}/${String(row.id)}`)}
+                  className={`border-b border-border last:border-0 hover:bg-surface ${
+                    resource.readOnly ? "" : "cursor-pointer"
+                  }`}
+                >
                   {columns.map((c) => (
                     <td key={c.name} className="px-4 py-3">
                       {formatCell(c, row[c.name])}
@@ -101,6 +107,7 @@ export default function ResourceListPage() {
                       {!resource.readOnly && (
                         <Link
                           href={`/${resource.slug}/${String(row.id)}`}
+                          onClick={(e) => e.stopPropagation()}
                           className="rounded p-1.5 hover:bg-muted"
                           aria-label="Edit"
                         >
@@ -109,7 +116,10 @@ export default function ResourceListPage() {
                       )}
                       {!resource.readOnly && (
                         <button
-                          onClick={() => onDelete(String(row.id))}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(String(row.id));
+                          }}
                           className="rounded p-1.5 text-destructive hover:bg-muted"
                           aria-label="Delete"
                         >
