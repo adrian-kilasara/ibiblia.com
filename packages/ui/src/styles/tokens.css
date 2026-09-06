@@ -128,11 +128,11 @@
 .hero-outline {
   color: transparent;
   -webkit-text-fill-color: transparent; /* drop the fill; keep only the stroke */
-  -webkit-text-stroke: 2px hsl(var(--gold)); /* gold outline on the navy (light) hero */
+  -webkit-text-stroke: 3px hsl(var(--gold)); /* gold outline on the navy (light) hero */
   paint-order: stroke fill;
 }
 .dark .hero-outline {
-  -webkit-text-stroke: 2px hsl(var(--primary-foreground)); /* navy outline on the gold (dark) hero */
+  -webkit-text-stroke: 3px hsl(var(--primary-foreground)); /* navy outline on the gold (dark) hero */
 }
 
 /* Bold (gold/navy) sections: section-level muted text adopts the section foreground so
