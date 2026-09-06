@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Button } from "@ibiblia/ui";
 import { api, ApiError } from "@/lib/api";
-import { Input } from "@/components/input";
+import { PasswordInput } from "@/components/password-input";
 import { useAuth } from "@/lib/auth";
 
 export default function AccountPage() {
@@ -48,16 +48,16 @@ export default function AccountPage() {
           <form onSubmit={onSubmit} className="mt-4 space-y-4">
             <div>
               <label className="mb-1 block text-sm font-medium">Current password</label>
-              <Input type="password" value={current} onChange={(e) => setCurrent(e.target.value)} required />
+              <PasswordInput value={current} onChange={(e) => setCurrent(e.target.value)} required />
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">New password</label>
-              <Input type="password" value={next} onChange={(e) => setNext(e.target.value)} required />
+              <PasswordInput value={next} onChange={(e) => setNext(e.target.value)} required />
               <p className="mt-1 text-xs text-muted-foreground">At least 8 characters.</p>
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Confirm new password</label>
-              <Input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
+              <PasswordInput value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}

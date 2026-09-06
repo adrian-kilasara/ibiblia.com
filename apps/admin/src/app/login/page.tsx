@@ -4,6 +4,7 @@ import * as React from "react";
 import { Button } from "@ibiblia/ui";
 import { useAuth } from "@/lib/auth";
 import { Input } from "@/components/input";
+import { PasswordInput } from "@/components/password-input";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -40,13 +41,7 @@ export default function LoginPage() {
         <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 
         <label className="mb-1 mt-4 block text-sm font-medium">Password</label>
-        <Input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoFocus
-        />
+        <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} required autoFocus />
 
         {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
