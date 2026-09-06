@@ -1,21 +1,15 @@
 import * as React from "react";
 import { cn } from "../lib/cn";
+import { SectionOverlay } from "./section-overlay";
 
 interface SectionProps extends React.HTMLAttributes<HTMLElement> {
   /** Alternate surface background for rhythm between sections. */
   surface?: boolean;
   /** Navy background for high-contrast feature sections. */
   navy?: boolean;
-  /** Optional background image blended over the section colour (subtle corners → stronger centre). */
+  /** Optional background image blended over the section colour (soft blurred corners → sharp centre). */
   image?: string | null;
 }
-
-/**
- * Radial mask: the background image shows at ~40% in the centre and fades to ~10% at the corners,
- * blended over the section's colour with mix-blend "overlay".
- */
-const OVERLAY_MASK =
-  "radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.28) 55%, rgba(0,0,0,0.1) 100%)";
 
 /** Full-width section wrapper with a centered container and vertical rhythm. */
 const Section = React.forwardRef<HTMLElement, SectionProps>(
@@ -30,17 +24,7 @@ const Section = React.forwardRef<HTMLElement, SectionProps>(
       )}
       {...props}
     >
-      {image && (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-cover bg-center mix-blend-luminosity"
-          style={{
-            backgroundImage: `url("${image}")`,
-            WebkitMaskImage: OVERLAY_MASK,
-            maskImage: OVERLAY_MASK,
-          }}
-        />
-      )}
+      <SectionOverlay image={image} />
       <div className="container relative z-10">{children}</div>
     </section>
   )

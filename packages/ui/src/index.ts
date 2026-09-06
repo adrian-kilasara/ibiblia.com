@@ -9,6 +9,7 @@ export {
   CardFooter,
 } from "./components/card";
 export { Section, SectionHeading } from "./components/section";
+export { SectionOverlay } from "./components/section-overlay";
 export { Badge, badgeVariants, type BadgeProps } from "./components/badge";
 export { Progress } from "./components/progress";
 export { Counter } from "./components/counter";

@@ -19,6 +19,7 @@ import {
   Reveal,
   Section,
   SectionHeading,
+  SectionOverlay,
 } from "@ibiblia/ui";
 import { site } from "@/lib/api";
 import { TestimonySlider } from "@/components/testimony-slider";
@@ -44,8 +45,6 @@ export default async function HomePage() {
   // Map each homepage section key to its uploaded background image (blended over the colour block).
   const bgMap = Object.fromEntries(backgrounds.map((b) => [b.key, b.imageUrl ?? undefined]));
   const bgFor = (key: string): string | undefined => bgMap[key] ?? undefined;
-  const HERO_MASK =
-    "radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.28) 55%, rgba(0,0,0,0.1) 100%)";
 
   // Assign an alternating gold ↔ dark-blue rhythm across the sections that actually render
   // (empty sections are skipped, so the alternation is never broken). The hero is band 0 (gold).
@@ -83,17 +82,7 @@ export default async function HomePage() {
     <main>
       {/* Hero */}
       <section className="section-bold relative overflow-hidden bg-primary text-primary-foreground">
-        {bgFor("hero") && (
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-cover bg-center mix-blend-luminosity"
-            style={{
-              backgroundImage: `url("${bgFor("hero")}")`,
-              WebkitMaskImage: HERO_MASK,
-              maskImage: HERO_MASK,
-            }}
-          />
-        )}
+        <SectionOverlay image={bgFor("hero")} />
         <div className="container relative z-10 flex min-h-[88vh] flex-col justify-center py-24">
           <Reveal>
             <Badge variant="gold" className="mb-6 w-fit">
