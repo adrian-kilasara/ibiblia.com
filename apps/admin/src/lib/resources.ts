@@ -52,7 +52,6 @@ const PUB_FORMAT = ["PDF", "EPUB", "AUDIO", "PRINT", "VIDEO"];
 const MEDIA_TYPE = ["VIDEO", "PODCAST", "AUDIO"];
 const TESTIMONY_ROLE = ["MISSIONARY", "TRANSLATOR", "READER", "PASTOR"];
 const MISSION_KEY = ["TRANSLATION", "PUBLISHING", "DIGITAL", "DISTRIBUTION", "INNOVATION"];
-const DONATION_STATUS = ["PENDING", "SUCCEEDED", "FAILED", "REFUNDED"];
 
 export const RESOURCES: ResourceUi[] = [
   {
@@ -505,21 +504,6 @@ export const RESOURCES: ResourceUi[] = [
         help: "Saving an answer emails it to the asker — but only if they subscribed. Non-subscribers reach you via the contact channels.",
       },
       { name: "answeredAt", label: "Answered", type: "date", hideInTable: true },
-    ],
-  },
-  {
-    slug: "donations",
-    label: "Donations",
-    group: "Inbox",
-    titleField: "donorEmail",
-    readOnly: true,
-    fields: [
-      { name: "amount", label: "Amount", type: "money" },
-      { name: "currency", label: "Currency", type: "text" },
-      { name: "provider", label: "Provider", type: "text" },
-      { name: "status", label: "Status", type: "select", options: DONATION_STATUS },
-      { name: "designation", label: "Designation", type: "text" },
-      { name: "donorEmail", label: "Donor Email", type: "text" },
     ],
   },
 ];

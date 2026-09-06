@@ -3,7 +3,7 @@ export interface ResourceConfig {
   delegate: string;
   orderBy?: Record<string, "asc" | "desc"> | Record<string, "asc" | "desc">[];
   include?: Record<string, boolean>;
-  /** Read-only resources (donations, subscribers) reject create/update/delete. */
+  /** Read-only resources (subscribers) reject create/update/delete. */
   readOnly?: boolean;
   /** Reject creation only (rows originate from the public site, e.g. questions). */
   noCreate?: boolean;
@@ -37,7 +37,6 @@ export const RESOURCES: Record<string, ResourceConfig> = {
   "contact-info": { delegate: "contactInfo", orderBy: { updatedAt: "desc" } },
   "section-backgrounds": { delegate: "sectionBackground", orderBy: { order: "asc" } },
   "giving-options": { delegate: "givingOption", orderBy: { order: "asc" } },
-  donations: { delegate: "donation", orderBy: { createdAt: "desc" }, readOnly: true },
   subscribers: { delegate: "subscriber", orderBy: { createdAt: "desc" }, readOnly: true },
   questions: { delegate: "question", orderBy: { createdAt: "desc" }, noCreate: true },
 };
