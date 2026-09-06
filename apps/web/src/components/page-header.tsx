@@ -25,7 +25,7 @@ export async function PageHeader({ eyebrow, title, description, bgKey }: PageHea
       {image && (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-cover bg-center"
+          className="pointer-events-none absolute inset-0 bg-cover bg-center mix-blend-luminosity"
           style={{ backgroundImage: `url("${image}")`, WebkitMaskImage: MASK, maskImage: MASK }}
         />
       )}
