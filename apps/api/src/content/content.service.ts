@@ -18,6 +18,10 @@ export class ContentService {
     return this.prisma.missionArea.findUnique({ where: { slug } });
   }
 
+  testimony(id: string) {
+    return this.prisma.testimony.findUnique({ where: { id } });
+  }
+
   testimonies() {
     return this.prisma.testimony.findMany({ orderBy: { order: "asc" } });
   }

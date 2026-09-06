@@ -131,6 +131,7 @@ export interface Testimony {
   quote: string;
   photoUrl?: string | null;
   location?: string | null;
+  content?: ContentBlock[];
 }
 
 export interface NewsPost {

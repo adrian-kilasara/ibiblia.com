@@ -269,9 +269,16 @@ export const RESOURCES: ResourceUi[] = [
     fields: [
       { name: "name", label: "Name", type: "text", required: true },
       { name: "role", label: "Role", type: "select", options: TESTIMONY_ROLE, required: true },
-      { name: "quote", label: "Quote", type: "textarea", required: true },
+      { name: "quote", label: "Quote", type: "textarea", required: true, help: "The short pull-quote shown in the slider." },
       { name: "location", label: "Location", type: "text" },
       { name: "photoUrl", label: "Photo", type: "image", hideInTable: true },
+      {
+        name: "content",
+        label: "Story Builder",
+        type: "blocks",
+        hideInTable: true,
+        help: "Optional full story — paragraphs with photos, videos, and links. Adds a 'Read the full story' link and its own page.",
+      },
       { name: "order", label: "Order", type: "number" },
     ],
   },

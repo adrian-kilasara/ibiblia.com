@@ -32,6 +32,11 @@ export class ContentController {
     return this.content.testimonies();
   }
 
+  @Get("testimonies/:id")
+  testimony(@Param("id") id: string) {
+    return this.content.testimony(id);
+  }
+
   @Get("partners")
   partners() {
     return this.content.partners();

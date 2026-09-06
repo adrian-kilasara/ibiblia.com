@@ -75,6 +75,7 @@ export const site = {
   news: (limit?: number) => get<NewsPost[]>(`/news${limit ? `?limit=${limit}` : ""}`, []),
   newsPost: (slug: string) => get<NewsPost | null>(`/news/${slug}`, null),
   testimonies: () => get<Testimony[]>("/testimonies", []),
+  testimony: (id: string) => get<Testimony | null>(`/testimonies/${id}`, null),
   team: () => get<Array<{ id: string; name: string; role: string; bio?: string; photoUrl?: string }>>("/team", []),
   partners: () => get<Array<{ id: string; name: string; logoUrl?: string; url?: string }>>("/partners", []),
   media: () =>

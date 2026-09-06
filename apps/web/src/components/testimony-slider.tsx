@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, Quote, ArrowRight } from "lucide-react";
 import type { Testimony } from "@ibiblia/types";
 
 export function TestimonySlider({ testimonies }: { testimonies: Testimony[] }) {
@@ -21,6 +22,14 @@ export function TestimonySlider({ testimonies }: { testimonies: Testimony[] }) {
         {t.role.charAt(0) + t.role.slice(1).toLowerCase()}
         {t.location ? ` · ${t.location}` : ""}
       </p>
+      {t.content && t.content.length > 0 && (
+        <Link
+          href={`/testimonies/${t.id}`}
+          className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-eyebrow hover:underline"
+        >
+          Read the full story <ArrowRight className="size-4" />
+        </Link>
+      )}
 
       {testimonies.length > 1 && (
         <div className="mt-8 flex items-center justify-center gap-3">

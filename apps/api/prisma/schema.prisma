@@ -246,6 +246,8 @@ model Testimony {
   quote    String
   photoUrl String?
   location String?
+  /// Rich story: ordered blocks (text/image/video/links) shown on the testimony detail page.
+  content  Json          @default("[]")
   order    Int           @default(0)
 }
 
