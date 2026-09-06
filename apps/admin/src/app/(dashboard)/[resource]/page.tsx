@@ -54,7 +54,7 @@ export default function ResourceListPage() {
           <h1 className="font-heading text-3xl font-bold">{resource.label}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{rows.length} items</p>
         </div>
-        {!resource.readOnly && (
+        {!resource.readOnly && !resource.noCreate && (
           <Button variant="navy" onClick={() => router.push(`/${resource.slug}/new`)}>
             <Plus /> New
           </Button>

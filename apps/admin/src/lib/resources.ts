@@ -42,6 +42,8 @@ export interface ResourceUi {
   titleField: string;
   fields: FieldConfig[];
   readOnly?: boolean;
+  /** Hide the "New" button and block creation (rows come from the public site, e.g. questions). */
+  noCreate?: boolean;
 }
 
 const PROJECT_STATUS = ["UPCOMING", "IN_PROGRESS", "COMPLETED", "NEEDS_FUNDING"];
@@ -474,20 +476,6 @@ export const RESOURCES: ResourceUi[] = [
     ],
   },
   {
-    slug: "submissions",
-    label: "Submissions",
-    group: "Inbox",
-    titleField: "email",
-    fields: [
-      { name: "type", label: "Type", type: "text" },
-      { name: "name", label: "Name", type: "text" },
-      { name: "email", label: "Email", type: "text" },
-      { name: "subject", label: "Subject", type: "text" },
-      { name: "message", label: "Message", type: "textarea", hideInTable: true },
-      { name: "handled", label: "Handled", type: "boolean" },
-    ],
-  },
-  {
     slug: "subscribers",
     label: "Subscribers",
     group: "Inbox",
@@ -504,6 +492,7 @@ export const RESOURCES: ResourceUi[] = [
     label: "Questions & Comments",
     group: "Inbox",
     titleField: "email",
+    noCreate: true, // questions come from visitors — the admin only reads and answers them
     fields: [
       { name: "name", label: "Name", type: "text" },
       { name: "email", label: "Email", type: "text", required: true },

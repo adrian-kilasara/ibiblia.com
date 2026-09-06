@@ -78,7 +78,7 @@ export class AdminService {
 
   async create(resource: string, data: Record<string, unknown>) {
     const cfg = this.config(resource);
-    if (cfg.readOnly) throw new ForbiddenException(`${resource} is read-only`);
+    if (cfg.readOnly || cfg.noCreate) throw new ForbiddenException(`${resource} cannot be created here`);
     const payload = this.clean(cfg, data);
     if (cfg.delegate === "question" && payload.answer) payload.answeredAt = new Date();
     const row = (await this.model(cfg).create({ data: payload, include: cfg.include })) as Record<string, unknown>;
