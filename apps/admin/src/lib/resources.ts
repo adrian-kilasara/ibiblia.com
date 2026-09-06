@@ -429,7 +429,7 @@ export const RESOURCES: ResourceUi[] = [
   },
   {
     slug: "section-backgrounds",
-    label: "Homepage Backgrounds",
+    label: "Section Backgrounds",
     group: "Site",
     titleField: "label",
     fields: [

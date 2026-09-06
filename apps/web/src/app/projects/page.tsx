@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Card, CardContent, Progress, Section } from "@ibiblia/ui";
+import { Card, CardContent, Progress } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 import { ProjectFilters } from "@/components/project-filters";
@@ -38,11 +39,12 @@ export default async function ProjectsPage({ searchParams }: Props) {
   return (
     <main>
       <PageHeader
+        bgKey="projects:header"
         eyebrow="Translation Projects"
         title="Scripture on the move"
         description="Follow the languages, regions, and communities receiving God's Word — and see where support is needed most."
       />
-      <Section>
+      <SectionBg bgKey="projects:body">
         <ProjectFilters languages={languages} countries={countries} />
 
         {projects.length === 0 ? (
@@ -78,7 +80,7 @@ export default async function ProjectsPage({ searchParams }: Props) {
             ))}
           </div>
         )}
-      </Section>
+      </SectionBg>
     </main>
   );
 }

@@ -32,15 +32,35 @@ export class SeedService implements OnApplicationBootstrap {
 
   private async ensureSectionBackgrounds(): Promise<void> {
     const sections = [
-      { key: "hero", label: "Hero (top banner)", order: 0 },
-      { key: "impact", label: "Impact numbers", order: 1 },
-      { key: "mission", label: "Mission areas", order: 2 },
-      { key: "preamble", label: "Preamble", order: 3 },
-      { key: "projects", label: "Featured projects", order: 4 },
-      { key: "publications", label: "Publications", order: 5 },
-      { key: "testimonies", label: "Testimonies", order: 6 },
-      { key: "getInvolved", label: "Get involved", order: 7 },
-      { key: "news", label: "Latest news", order: 8 },
+      // ── Homepage sections ──
+      { key: "hero", label: "Home · Hero (top banner)", order: 0 },
+      { key: "impact", label: "Home · Impact numbers", order: 1 },
+      { key: "mission", label: "Home · Mission areas", order: 2 },
+      { key: "preamble", label: "Home · Preamble", order: 3 },
+      { key: "projects", label: "Home · Featured projects", order: 4 },
+      { key: "publications", label: "Home · Publications", order: 5 },
+      { key: "testimonies", label: "Home · Testimonies", order: 6 },
+      { key: "getInvolved", label: "Home · Get involved", order: 7 },
+      { key: "news", label: "Home · Latest news", order: 8 },
+      // ── Inner pages (each: header banner + body). Detail pages reuse the listing keys. ──
+      { key: "about:header", label: "About · Header", order: 10 },
+      { key: "about:body", label: "About · Body", order: 11 },
+      { key: "mission:header", label: "Mission page · Header", order: 12 },
+      { key: "mission:body", label: "Mission page · Body", order: 13 },
+      { key: "projects:header", label: "Projects page · Header", order: 14 },
+      { key: "projects:body", label: "Projects page · Body", order: 15 },
+      { key: "publications:header", label: "Publications page · Header", order: 16 },
+      { key: "publications:body", label: "Publications page · Body", order: 17 },
+      { key: "news:header", label: "News page · Header", order: 18 },
+      { key: "news:body", label: "News page · Body", order: 19 },
+      { key: "getinvolved:header", label: "Get Involved page · Header", order: 20 },
+      { key: "getinvolved:body", label: "Get Involved page · Body", order: 21 },
+      { key: "donate:header", label: "Donate page · Header", order: 22 },
+      { key: "donate:body", label: "Donate page · Body", order: 23 },
+      { key: "contact:header", label: "Contact page · Header", order: 24 },
+      { key: "contact:body", label: "Contact page · Body", order: 25 },
+      { key: "media:header", label: "Media page · Header", order: 26 },
+      { key: "media:body", label: "Media page · Body", order: 27 },
     ];
     for (const s of sections) {
       await this.prisma.sectionBackground.upsert({

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Section, SectionHeading, Card, CardContent } from "@ibiblia/ui";
+import { SectionHeading, Card, CardContent } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 
@@ -64,13 +65,14 @@ export default async function AboutPage() {
   return (
     <main>
       <PageHeader
+        bgKey="about:header"
         eyebrow="About iBiblia"
         title="Scripture for every language, every nation, every soul"
         description="iBiblia translates, produces, publishes, and distributes Scripture and Christ-centered literature globally — especially in underserved languages."
       />
 
       {/* Our Story — meaning of the name */}
-      <Section>
+      <SectionBg bgKey="about:body">
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <SectionHeading eyebrow="Our Story" title="Why iBiblia exists" />
           <div className="space-y-4 leading-relaxed text-muted-foreground">
@@ -95,10 +97,10 @@ export default async function AboutPage() {
             </p>
           </div>
         </div>
-      </Section>
+      </SectionBg>
 
       {/* Vision & Mission */}
-      <Section surface>
+      <SectionBg bgKey="about:body" surface>
         <div className="grid gap-10 lg:grid-cols-2">
           <div>
             <SectionHeading eyebrow="Vision" title="Where we are headed" />
@@ -114,10 +116,10 @@ export default async function AboutPage() {
             </p>
           </div>
         </div>
-      </Section>
+      </SectionBg>
 
       {/* Core Activities */}
-      <Section>
+      <SectionBg bgKey="about:body">
         <SectionHeading
           align="center"
           eyebrow="Core Activities"
@@ -145,10 +147,10 @@ export default async function AboutPage() {
             </Card>
           ))}
         </div>
-      </Section>
+      </SectionBg>
 
       {/* Objectives */}
-      <Section surface>
+      <SectionBg bgKey="about:body" surface>
         <SectionHeading eyebrow="Objectives" title="Our strategic objectives" className="mb-12" />
         <div className="grid gap-6 md:grid-cols-2">
           {OBJECTIVES.map((o, i) => (
@@ -163,11 +165,11 @@ export default async function AboutPage() {
             </div>
           ))}
         </div>
-      </Section>
+      </SectionBg>
 
       {/* Leadership */}
       {team.length > 0 && (
-        <Section>
+        <SectionBg bgKey="about:body">
           <SectionHeading align="center" eyebrow="Leadership" title="The people behind the mission" className="mb-12" />
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((member) => (
@@ -185,7 +187,7 @@ export default async function AboutPage() {
               </Link>
             ))}
           </div>
-        </Section>
+        </SectionBg>
       )}
     </main>
   );

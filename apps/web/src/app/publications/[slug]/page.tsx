@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Download, BookOpen } from "lucide-react";
-import { Badge, Button, Section } from "@ibiblia/ui";
+import { Badge, Button } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { site, formatMoney } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 import { VideoBlock, GalleryBlock, LinksBlock, ContentBlocks } from "@/components/media-blocks";
@@ -24,8 +25,8 @@ export default async function PublicationDetailPage({ params }: Props) {
 
   return (
     <main>
-      <PageHeader eyebrow={pub.category.replace("_", " ")} title={pub.title} />
-      <Section>
+      <PageHeader bgKey="publications:header" eyebrow={pub.category.replace("_", " ")} title={pub.title} />
+      <SectionBg bgKey="publications:body">
         <Link href="/publications" className="mb-8 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" /> All publications
         </Link>
@@ -85,7 +86,7 @@ export default async function PublicationDetailPage({ params }: Props) {
             <LinksBlock links={pub.links} className="mt-8" />
           </div>
         </div>
-      </Section>
+      </SectionBg>
     </main>
   );
 }

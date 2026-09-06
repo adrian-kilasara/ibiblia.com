@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { HeartHandshake } from "lucide-react";
-import { Section } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 
@@ -19,12 +19,13 @@ export default async function DonatePage() {
   return (
     <main>
       <PageHeader
+        bgKey="donate:header"
         eyebrow="Support the Mission"
         title={page?.title ?? "Partner with us in reaching every language"}
         description={invitation}
       />
 
-      <Section>
+      <SectionBg bgKey="donate:body">
         <div className="mx-auto max-w-2xl">
           <div className="rounded-xl border border-border bg-card p-8 shadow-sm">
             <span className="liquid-glass-dark mb-5 inline-flex size-12 items-center justify-center rounded-full text-gold">
@@ -53,7 +54,7 @@ export default async function DonatePage() {
             iBiblia is a non-profit, faith-based organization. Thank you for your partnership.
           </p>
         </div>
-      </Section>
+      </SectionBg>
     </main>
   );
 }

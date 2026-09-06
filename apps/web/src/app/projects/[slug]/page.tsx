@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { Button, Progress, Section } from "@ibiblia/ui";
+import { Button, Progress } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { site, formatMoney } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 import { VideoBlock, GalleryBlock, LinksBlock, ContentBlocks } from "@/components/media-blocks";
@@ -35,8 +36,8 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   return (
     <main>
-      <PageHeader eyebrow={p.language ? `${p.language.name} · ${p.region ?? ""}` : "Project"} title={p.title} description={p.summary} />
-      <Section>
+      <PageHeader bgKey="projects:header" eyebrow={p.language ? `${p.language.name} · ${p.region ?? ""}` : "Project"} title={p.title} description={p.summary} />
+      <SectionBg bgKey="projects:body">
         <Link href="/projects" className="mb-8 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" /> All projects
         </Link>
@@ -108,7 +109,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             </div>
           </aside>
         </div>
-      </Section>
+      </SectionBg>
     </main>
   );
 }

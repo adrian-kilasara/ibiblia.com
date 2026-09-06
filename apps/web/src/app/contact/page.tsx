@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Clock, Mail, MapPin, Phone, ExternalLink } from "lucide-react";
-import { Section } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 import { InquiryForm } from "@/components/inquiry-form";
@@ -29,11 +29,12 @@ export default async function ContactPage() {
   return (
     <main>
       <PageHeader
+        bgKey="contact:header"
         eyebrow="Contact"
         title="We'd love to hear from you"
         description="Questions, partnership ideas, or prayer requests — send us a message and we'll respond soon."
       />
-      <Section>
+      <SectionBg bgKey="contact:body">
         <div className="grid gap-12 lg:grid-cols-[1fr_360px]">
           <div>
             <h2 className="font-heading text-2xl font-semibold">Send a message</h2>
@@ -106,7 +107,7 @@ export default async function ContactPage() {
             )}
           </aside>
         </div>
-      </Section>
+      </SectionBg>
     </main>
   );
 }

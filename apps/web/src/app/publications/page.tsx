@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Download } from "lucide-react";
-import { Badge, Button, Section } from "@ibiblia/ui";
+import { Badge, Button } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 import { PublicationFilters } from "@/components/publication-filters";
@@ -23,11 +24,12 @@ export default async function PublicationsPage({ searchParams }: Props) {
   return (
     <main>
       <PageHeader
+        bgKey="publications:header"
         eyebrow="Publications"
         title="Scripture and Christ-centered resources"
         description="Explore our catalog of Bibles, devotionals, study guides, and children's books — many available to read, download, or listen for free."
       />
-      <Section>
+      <SectionBg bgKey="publications:body">
         <PublicationFilters />
 
         {publications.length === 0 ? (
@@ -74,7 +76,7 @@ export default async function PublicationsPage({ searchParams }: Props) {
             ))}
           </div>
         )}
-      </Section>
+      </SectionBg>
     </main>
   );
 }

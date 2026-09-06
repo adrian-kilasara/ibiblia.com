@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Card, CardContent, Section } from "@ibiblia/ui";
+import { Card, CardContent } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 
@@ -15,11 +16,12 @@ export default async function NewsPage() {
   return (
     <main>
       <PageHeader
+        bgKey="news:header"
         eyebrow="News & Updates"
         title="Stories from the field"
         description="Translation milestones, publishing announcements, and glimpses of the mission at work."
       />
-      <Section>
+      <SectionBg bgKey="news:body">
         {posts.length === 0 ? (
           <p className="py-16 text-center text-muted-foreground">No articles yet.</p>
         ) : (
@@ -50,7 +52,7 @@ export default async function NewsPage() {
             ))}
           </div>
         )}
-      </Section>
+      </SectionBg>
     </main>
   );
 }

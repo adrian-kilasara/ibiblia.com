@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
-import { Section } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 import { ContentBlocks } from "@/components/media-blocks";
@@ -24,8 +24,8 @@ export default async function MissionAreaPage({ params }: Props) {
 
   return (
     <main>
-      <PageHeader eyebrow="Mission Area" title={area.title} description={area.summary} />
-      <Section>
+      <PageHeader bgKey="mission:header" eyebrow="Mission Area" title={area.title} description={area.summary} />
+      <SectionBg bgKey="mission:body">
         <Link href="/mission" className="mb-8 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" /> All mission areas
         </Link>
@@ -81,7 +81,7 @@ export default async function MissionAreaPage({ params }: Props) {
         )}
           </>
         )}
-      </Section>
+      </SectionBg>
     </main>
   );
 }

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BookOpen, Globe, Headphones, Package, Sparkles } from "lucide-react";
 import type { MissionAreaKey } from "@ibiblia/types";
-import { Section, Card, CardContent } from "@ibiblia/ui";
+import { Card, CardContent } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 
@@ -25,11 +26,12 @@ export default async function MissionPage() {
   return (
     <main>
       <PageHeader
+        bgKey="mission:header"
         eyebrow="Our Mission"
         title="From the translator's desk to a reader's hands"
         description="Connected efforts that together carry the Word of God to every language and nation."
       />
-      <Section>
+      <SectionBg bgKey="mission:body">
         <div className="grid gap-6 md:grid-cols-2">
           {areas.map((area) => {
             const Icon = ICON[area.key] ?? Globe;
@@ -53,7 +55,7 @@ export default async function MissionPage() {
             );
           })}
         </div>
-      </Section>
+      </SectionBg>
     </main>
   );
 }

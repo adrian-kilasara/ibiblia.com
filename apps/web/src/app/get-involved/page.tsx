@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Section } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { PageHeader } from "@/components/page-header";
 import { GetInvolvedTabs } from "@/components/get-involved-tabs";
 
@@ -12,13 +12,14 @@ export default function GetInvolvedPage() {
   return (
     <main>
       <PageHeader
+        bgKey="getinvolved:header"
         eyebrow="Become Part of the Mission"
         title="There's a place for you"
         description="Whether you translate, edit, design, give, or pray — your part moves Scripture toward the nations."
       />
-      <Section>
+      <SectionBg bgKey="getinvolved:body">
         <GetInvolvedTabs />
-      </Section>
+      </SectionBg>
     </main>
   );
 }

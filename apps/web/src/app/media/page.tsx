@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Play, Headphones, Video } from "lucide-react";
-import { Section, SectionHeading } from "@ibiblia/ui";
+import { SectionHeading } from "@ibiblia/ui";
+import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
 
@@ -21,11 +22,12 @@ export default async function MediaPage() {
   return (
     <main>
       <PageHeader
+        bgKey="media:header"
         eyebrow="Watch & Listen"
         title="Media library"
         description="Videos, podcasts, sermons, and Bible studies from across the mission."
       />
-      <Section>
+      <SectionBg bgKey="media:body">
         {media.length === 0 ? (
           <p className="py-16 text-center text-muted-foreground">No media yet.</p>
         ) : (
@@ -51,7 +53,7 @@ export default async function MediaPage() {
             </div>
           </>
         )}
-      </Section>
+      </SectionBg>
     </main>
   );
 }
