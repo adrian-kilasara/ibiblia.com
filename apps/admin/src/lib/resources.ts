@@ -428,6 +428,22 @@ export const RESOURCES: ResourceUi[] = [
     ],
   },
   {
+    slug: "section-backgrounds",
+    label: "Homepage Backgrounds",
+    group: "Site",
+    titleField: "label",
+    fields: [
+      { name: "label", label: "Section", type: "text" },
+      {
+        name: "imageUrl",
+        label: "Background Image (3:2)",
+        type: "image",
+        help: "Uploaded photo blended over this section's colour — subtle at the corners, stronger in the centre. Use a 3:2 landscape image. Leave empty for a plain colour block.",
+      },
+      { name: "order", label: "Order", type: "number", hideInTable: true },
+    ],
+  },
+  {
     slug: "submissions",
     label: "Submissions",
     group: "Inbox",

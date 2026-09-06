@@ -33,6 +33,7 @@ export const RESOURCES: Record<string, ResourceConfig> = {
   gallery: { delegate: "galleryImage", orderBy: { order: "asc" } },
   pages: { delegate: "page", orderBy: { updatedAt: "desc" } },
   "contact-info": { delegate: "contactInfo", orderBy: { updatedAt: "desc" } },
+  "section-backgrounds": { delegate: "sectionBackground", orderBy: { order: "asc" } },
   donations: { delegate: "donation", orderBy: { createdAt: "desc" }, readOnly: true },
   submissions: { delegate: "submission", orderBy: { createdAt: "desc" } },
 };

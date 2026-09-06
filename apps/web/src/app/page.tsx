@@ -39,7 +39,13 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const data = await site.home();
+  const [data, backgrounds] = await Promise.all([site.home(), site.sectionBackgrounds()]);
+
+  // Map each homepage section key to its uploaded background image (blended over the colour block).
+  const bgMap = Object.fromEntries(backgrounds.map((b) => [b.key, b.imageUrl ?? undefined]));
+  const bgFor = (key: string): string | undefined => bgMap[key] ?? undefined;
+  const HERO_MASK =
+    "radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.28) 55%, rgba(0,0,0,0.1) 100%)";
 
   // Assign an alternating gold ↔ dark-blue rhythm across the sections that actually render
   // (empty sections are skipped, so the alternation is never broken). The hero is band 0 (gold).
@@ -77,6 +83,17 @@ export default async function HomePage() {
     <main>
       {/* Hero */}
       <section className="section-bold relative overflow-hidden bg-primary text-primary-foreground">
+        {bgFor("hero") && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-cover bg-center mix-blend-overlay"
+            style={{
+              backgroundImage: `url("${bgFor("hero")}")`,
+              WebkitMaskImage: HERO_MASK,
+              maskImage: HERO_MASK,
+            }}
+          />
+        )}
         <div className="container relative z-10 flex min-h-[88vh] flex-col justify-center py-24">
           <Reveal>
             <Badge variant="gold" className="mb-6 w-fit">
@@ -124,7 +141,7 @@ export default async function HomePage() {
 
       {/* Impact numbers */}
       {data.impactStats.length > 0 && (
-        <Section {...bandProps("impact")}>
+        <Section {...bandProps("impact")} image={bgFor("impact")}>
           <SectionHeading
             align="center"
             eyebrow="Our Impact"
@@ -149,7 +166,7 @@ export default async function HomePage() {
 
       {/* Mission areas */}
       {data.missionAreas.length > 0 && (
-        <Section {...bandProps("mission")}>
+        <Section {...bandProps("mission")} image={bgFor("mission")}>
           <SectionHeading
             eyebrow="What We Do"
             title="Our mission areas"
@@ -182,7 +199,7 @@ export default async function HomePage() {
       )}
 
       {/* Preamble */}
-      <Section {...bandProps("preamble")}>
+      <Section {...bandProps("preamble")} image={bgFor("preamble")}>
         <div className="mx-auto max-w-3xl text-center">
           <p className="mb-4 font-sans text-sm font-semibold uppercase tracking-[0.18em] text-eyebrow">
             Our Preamble
@@ -218,7 +235,7 @@ export default async function HomePage() {
 
       {/* Featured projects */}
       {data.featuredProjects.length > 0 && (
-        <Section {...bandProps("projects")}>
+        <Section {...bandProps("projects")} image={bgFor("projects")}>
           <SectionHeading
             eyebrow="Featured Translation Projects"
             title="Where Scripture is on the move"
@@ -266,7 +283,7 @@ export default async function HomePage() {
 
       {/* Publications */}
       {data.publications.length > 0 && (
-        <Section {...bandProps("publications")}>
+        <Section {...bandProps("publications")} image={bgFor("publications")}>
           <SectionHeading
             eyebrow="Publications"
             title="Scripture and Christ-centered resources"
@@ -293,13 +310,13 @@ export default async function HomePage() {
 
       {/* Testimonies */}
       {data.testimonies.length > 0 && (
-        <Section {...bandProps("testimonies")}>
+        <Section {...bandProps("testimonies")} image={bgFor("testimonies")}>
           <TestimonySlider testimonies={data.testimonies} />
         </Section>
       )}
 
       {/* Get involved */}
-      <Section {...bandProps("getInvolved")}>
+      <Section {...bandProps("getInvolved")} image={bgFor("getInvolved")}>
         <SectionHeading
           align="center"
           eyebrow="Become Part of the Mission"
@@ -330,7 +347,7 @@ export default async function HomePage() {
 
       {/* Latest news */}
       {data.latestNews.length > 0 && (
-        <Section {...bandProps("news")}>
+        <Section {...bandProps("news")} image={bgFor("news")}>
           <SectionHeading eyebrow="Latest News" title="Updates from the field" className="mb-12" />
           <div className="grid gap-6 md:grid-cols-3">
             {data.latestNews.map((post) => (

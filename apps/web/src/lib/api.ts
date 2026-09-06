@@ -11,6 +11,7 @@ import type {
   Publication,
   Testimony,
   NewsPost,
+  SectionBackground,
 } from "@ibiblia/types";
 
 const RAW_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4400";
@@ -76,6 +77,7 @@ export const site = {
   newsPost: (slug: string) => get<NewsPost | null>(`/news/${slug}`, null),
   testimonies: () => get<Testimony[]>("/testimonies", []),
   testimony: (id: string) => get<Testimony | null>(`/testimonies/${id}`, null),
+  sectionBackgrounds: () => get<SectionBackground[]>("/section-backgrounds", []),
   team: () => get<Array<{ id: string; name: string; role: string; bio?: string; photoUrl?: string }>>("/team", []),
   partners: () => get<Array<{ id: string; name: string; logoUrl?: string; url?: string }>>("/partners", []),
   media: () =>

@@ -76,6 +76,15 @@ export interface LinkItem {
   url: string;
 }
 
+/** Per-section homepage background image, blended over the section's colour. */
+export interface SectionBackground {
+  id: ID;
+  key: string;
+  label: string;
+  imageUrl?: string | null;
+  order: number;
+}
+
 /** One block in a rich, composable story. Media blocks sit inline between text blocks. */
 export type ContentBlock =
   | { type: "text"; text: string }

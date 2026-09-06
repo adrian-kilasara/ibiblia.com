@@ -336,6 +336,15 @@ model ContactInfo {
 }
 
 /// Metadata for a file uploaded to object storage.
+/// Per-section homepage background image, blended over the section's colour block.
+model SectionBackground {
+  id       String  @id @default(cuid())
+  key      String  @unique // homepage section key: hero, impact, mission, projects, …
+  label    String
+  imageUrl String?
+  order    Int     @default(0)
+}
+
 model MediaAsset {
   id        String   @id @default(cuid())
   key       String   @unique

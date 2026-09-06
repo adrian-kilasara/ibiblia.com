@@ -71,4 +71,9 @@ export class ContentController {
   contactInfo() {
     return this.content.contactInfo();
   }
+
+  @Get("section-backgrounds")
+  sectionBackgrounds() {
+    return this.content.sectionBackgrounds();
+  }
 }

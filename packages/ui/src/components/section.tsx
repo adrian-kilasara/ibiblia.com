@@ -6,22 +6,42 @@ interface SectionProps extends React.HTMLAttributes<HTMLElement> {
   surface?: boolean;
   /** Navy background for high-contrast feature sections. */
   navy?: boolean;
+  /** Optional background image blended over the section colour (subtle corners → stronger centre). */
+  image?: string | null;
 }
+
+/**
+ * Radial mask: the background image shows at ~40% in the centre and fades to ~10% at the corners,
+ * blended over the section's colour with mix-blend "overlay".
+ */
+const OVERLAY_MASK =
+  "radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.28) 55%, rgba(0,0,0,0.1) 100%)";
 
 /** Full-width section wrapper with a centered container and vertical rhythm. */
 const Section = React.forwardRef<HTMLElement, SectionProps>(
-  ({ className, surface, navy, children, ...props }, ref) => (
+  ({ className, surface, navy, image, children, ...props }, ref) => (
     <section
       ref={ref}
       className={cn(
-        "w-full py-16 md:py-24",
+        "relative w-full overflow-hidden py-16 md:py-24",
         surface && "bg-surface",
         navy && "section-bold bg-primary text-primary-foreground",
         className
       )}
       {...props}
     >
-      <div className="container">{children}</div>
+      {image && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-cover bg-center mix-blend-overlay"
+          style={{
+            backgroundImage: `url("${image}")`,
+            WebkitMaskImage: OVERLAY_MASK,
+            maskImage: OVERLAY_MASK,
+          }}
+        />
+      )}
+      <div className="container relative z-10">{children}</div>
     </section>
   )
 );
