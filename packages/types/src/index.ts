@@ -76,6 +76,16 @@ export interface LinkItem {
   url: string;
 }
 
+/** A giving/payment entry on the Donate page — its `value` (number) is copy-to-clipboard. */
+export interface GivingOption {
+  id: ID;
+  label: string;
+  name?: string | null;
+  value: string;
+  note?: string | null;
+  order: number;
+}
+
 /** Per-section homepage background image, blended over the section's colour. */
 export interface SectionBackground {
   id: ID;

@@ -336,6 +336,17 @@ model ContactInfo {
 }
 
 /// Metadata for a file uploaded to object storage.
+/// A giving/payment entry shown on the Donate page — bank account, mobile number, merchant, etc.
+/// Its `value` (the number) is copy-to-clipboard on the site. Add as many as needed.
+model GivingOption {
+  id    String  @id @default(cuid())
+  label String // e.g. "Bank Account", "Mobile Money", "Merchant Number"
+  name  String? // bank / account holder / merchant name
+  value String // the number visitors copy (account no / phone / merchant no)
+  note  String? // optional extra (branch, SWIFT, reference…)
+  order Int     @default(0)
+}
+
 /// Per-section homepage background image, blended over the section's colour block.
 model SectionBackground {
   id       String  @id @default(cuid())

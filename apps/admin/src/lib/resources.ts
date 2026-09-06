@@ -428,6 +428,31 @@ export const RESOURCES: ResourceUi[] = [
     ],
   },
   {
+    slug: "giving-options",
+    label: "Giving / Donations",
+    group: "Site",
+    titleField: "label",
+    fields: [
+      {
+        name: "label",
+        label: "Type",
+        type: "text",
+        required: true,
+        help: 'e.g. "Bank Account", "Mobile Money / Phone", "Merchant Number"',
+      },
+      { name: "name", label: "Name", type: "text", help: "Bank name, account holder, or merchant name" },
+      {
+        name: "value",
+        label: "Number",
+        type: "text",
+        required: true,
+        help: "The account / phone / merchant number visitors tap to copy",
+      },
+      { name: "note", label: "Extra note (optional)", type: "text", hideInTable: true, help: "e.g. branch, SWIFT, reference" },
+      { name: "order", label: "Order", type: "number", hideInTable: true },
+    ],
+  },
+  {
     slug: "section-backgrounds",
     label: "Section Backgrounds",
     group: "Site",

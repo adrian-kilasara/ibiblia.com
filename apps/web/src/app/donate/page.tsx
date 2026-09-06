@@ -3,14 +3,15 @@ import { HeartHandshake } from "lucide-react";
 import { SectionBg } from "@/components/section-bg";
 import { site } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
+import { GivingList } from "@/components/giving-list";
 
 export const metadata: Metadata = {
   title: "Donate",
-  description: "Partner with iBiblia to put Scripture into every language. Give via bank transfer.",
+  description: "Partner with iBiblia to put Scripture into every language.",
 };
 
 export default async function DonatePage() {
-  const page = await site.page("donate");
+  const [page, options] = await Promise.all([site.page("donate"), site.givingOptions()]);
 
   const invitation =
     page?.seoDescription ??
@@ -27,31 +28,21 @@ export default async function DonatePage() {
 
       <SectionBg bgKey="donate:body">
         <div className="mx-auto max-w-2xl">
-          <div className="rounded-xl border border-border bg-card p-8 shadow-sm">
-            <span className="liquid-glass-dark mb-5 inline-flex size-12 items-center justify-center rounded-full text-gold">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="liquid-glass-dark inline-flex size-12 items-center justify-center rounded-full text-gold">
               <HeartHandshake className="size-6" />
             </span>
-            <h2 className="font-heading text-2xl font-semibold">Give by bank transfer</h2>
-            <p className="mt-2 text-muted-foreground">
-              Use the account details below to make your gift. For questions or to arrange another
-              method, please reach us via the Contact page.
-            </p>
-
-            <div className="mt-6 rounded-lg bg-surface p-6">
-              {page?.body ? (
-                <div className="whitespace-pre-line text-sm leading-relaxed text-foreground">
-                  {page.body}
-                </div>
-              ) : (
-                <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-                  {`Bank transfer details will appear here.\n\nAn administrator can add the account name, account number, bank, branch, and SWIFT/reference details in the CMS under Pages → "donate" (the Body field).`}
-                </p>
-              )}
+            <div>
+              <h2 className="font-heading text-2xl font-semibold">Ways to give</h2>
+              <p className="text-sm text-muted-foreground">Tap any number to copy it.</p>
             </div>
           </div>
 
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            iBiblia is a non-profit, faith-based organization. Thank you for your partnership.
+          <GivingList options={options} />
+
+          <p className="mt-8 text-center text-sm text-muted-foreground">
+            iBiblia is a non-profit, faith-based organization. For questions or another way to give,
+            please reach us via the Contact page. Thank you for your partnership.
           </p>
         </div>
       </SectionBg>

@@ -97,6 +97,13 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        // "Thank you" bubble on copy: pop in, hold, then slowly fade out.
+        giftpop: {
+          "0%": { opacity: "0", transform: "translate(-50%, calc(-100% + 6px)) scale(0.9)" },
+          "12%": { opacity: "1", transform: "translate(-50%, -100%) scale(1)" },
+          "70%": { opacity: "1", transform: "translate(-50%, -100%) scale(1)" },
+          "100%": { opacity: "0", transform: "translate(-50%, calc(-100% - 8px)) scale(1)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both",
@@ -105,6 +112,7 @@ module.exports = {
         shimmer: "shimmer 6s linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        giftpop: "giftpop 2.4s ease-out forwards",
       },
     },
   },

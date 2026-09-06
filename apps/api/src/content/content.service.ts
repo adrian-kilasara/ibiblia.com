@@ -58,6 +58,10 @@ export class ContentService {
     return this.prisma.sectionBackground.findMany({ orderBy: { order: "asc" } });
   }
 
+  givingOptions() {
+    return this.prisma.givingOption.findMany({ orderBy: { order: "asc" } });
+  }
+
   /** Everything the homepage needs, in one round-trip. */
   async home() {
     const [impactStats, missionAreas, featuredProjects, testimonies, latestNews, publications] =

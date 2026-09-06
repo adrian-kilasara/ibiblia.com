@@ -76,4 +76,9 @@ export class ContentController {
   sectionBackgrounds() {
     return this.content.sectionBackgrounds();
   }
+
+  @Get("giving-options")
+  givingOptions() {
+    return this.content.givingOptions();
+  }
 }
