@@ -7,16 +7,23 @@ import type { GivingOption } from "@ibiblia/types";
 /**
  * Renders the giving/payment entries. Each number has a faint highlight and copies to the
  * clipboard on click, popping a "Thank you for spreading the gospel" bubble that fades away.
+ * The bubble is visible by default and fades via a state-driven transition (so it always shows,
+ * even under reduced-motion where keyframe animations collapse).
  */
 export function GivingList({ options }: { options: GivingOption[] }) {
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
-  const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [fading, setFading] = React.useState(false);
+  const timers = React.useRef<Array<ReturnType<typeof setTimeout>>>([]);
+
+  function clearTimers() {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  }
 
   async function copy(option: GivingOption) {
     try {
       await navigator.clipboard.writeText(option.value);
     } catch {
-      // Fallback for browsers without the async clipboard API.
       const ta = document.createElement("textarea");
       ta.value = option.value;
       ta.style.position = "fixed";
@@ -30,14 +37,14 @@ export function GivingList({ options }: { options: GivingOption[] }) {
       }
       document.body.removeChild(ta);
     }
+    clearTimers();
     setCopiedId(option.id);
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setCopiedId(null), 2400);
+    setFading(false);
+    timers.current.push(setTimeout(() => setFading(true), 1600)); // start the slow fade
+    timers.current.push(setTimeout(() => setCopiedId(null), 2500)); // remove after it fades
   }
 
-  React.useEffect(() => () => {
-    if (timer.current) clearTimeout(timer.current);
-  }, []);
+  React.useEffect(() => clearTimers, []);
 
   if (options.length === 0) {
     return (
@@ -72,11 +79,16 @@ export function GivingList({ options }: { options: GivingOption[] }) {
                 </span>
               </button>
 
-              {/* Fading "thank you" bubble */}
+              {/* "Thank you" bubble — visible immediately, then fades out. */}
               {copied && (
                 <span
                   role="status"
-                  className="pointer-events-none absolute -top-3 left-1/2 z-10 -translate-x-1/2 -translate-y-full animate-giftpop whitespace-nowrap rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg"
+                  className="pointer-events-none absolute -top-3 left-1/2 z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg"
+                  style={{
+                    opacity: fading ? 0 : 1,
+                    transform: `translateX(-50%) translateY(${fading ? "-118%" : "-100%"})`,
+                    transition: "opacity 800ms ease, transform 800ms ease",
+                  }}
                 >
                   Thank you for spreading the gospel
                   <span className="absolute left-1/2 top-full -ml-1.5 border-x-[6px] border-t-[6px] border-x-transparent border-t-primary" />
