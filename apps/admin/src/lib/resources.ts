@@ -294,10 +294,10 @@ export const RESOURCES: ResourceUi[] = [
     group: "People",
     titleField: "name",
     fields: [
+      { name: "photoUrl", label: "Photo", type: "image" },
       { name: "name", label: "Name", type: "text", required: true },
       { name: "role", label: "Role", type: "text", required: true },
       { name: "bio", label: "Bio", type: "textarea", hideInTable: true },
-      { name: "photoUrl", label: "Photo", type: "image", hideInTable: true },
       { name: "order", label: "Order", type: "number" },
     ],
   },

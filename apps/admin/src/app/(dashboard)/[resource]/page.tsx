@@ -129,6 +129,24 @@ export default function ResourceListPage() {
 }
 
 function formatCell(field: FieldConfig, value: unknown): React.ReactNode {
+  // Image fields: show a small thumbnail so each row is identifiable at a glance.
+  if (field.type === "image") {
+    return value ? (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={String(value)} alt="" className="size-10 rounded-full object-cover ring-1 ring-border" />
+    ) : (
+      <span className="flex size-10 items-center justify-center rounded-full bg-surface text-xs text-muted-foreground ring-1 ring-border">—</span>
+    );
+  }
+  if (field.type === "image-multi") {
+    const arr = Array.isArray(value) ? (value as string[]) : [];
+    return arr.length ? (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={arr[0]} alt="" className="size-10 rounded-md object-cover ring-1 ring-border" />
+    ) : (
+      <span className="text-muted-foreground">—</span>
+    );
+  }
   if (value === null || value === undefined || value === "") return <span className="text-muted-foreground">—</span>;
   if (field.type === "boolean") return value ? "Yes" : "No";
   if (field.type === "money") return `$${(Number(value) / 100).toFixed(2)}`;
